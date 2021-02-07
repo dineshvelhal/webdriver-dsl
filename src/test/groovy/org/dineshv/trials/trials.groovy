@@ -1,5 +1,6 @@
 package org.dineshv.trials
 
+import org.dineshv.pomdsl.FramesPage
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import io.github.bonigarcia.wdm.WebDriverManager
@@ -12,11 +13,13 @@ WebDriver driver
 try {
   driver = new ChromeDriver()
 
-  driver.get 'https://dineshvelhal.github.io/testautomation-playground/login.html'
+  driver.get 'https://dineshvelhal.github.io/testautomation-playground/frames.html'
 
-  LoginPage lp = new LoginPage(driver)
+  FramesPage fp = new FramesPage(driver)
 
-  lp.login'admin', 'admin'
+  fp.clickButtons()
+
+  Thread.sleep(5000)
 
 } finally {
   driver.quit()

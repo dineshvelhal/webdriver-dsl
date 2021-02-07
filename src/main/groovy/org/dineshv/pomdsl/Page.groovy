@@ -373,4 +373,12 @@ class Page {
       }
     }
   }
+
+  def frame(By frame, Closure body) {
+    move into: frame
+
+    body.call()
+
+    backTo parentFrame
+  }
 }

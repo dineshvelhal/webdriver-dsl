@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="mySuite" verbose="1">
+
+  <test name="Tests">
+    <classes>
+      <!--<class name="org.dineshv.pomdsl.PageTests"/>-->
+      <!--<class name="org.dineshv.pomdsl.ClickTypeTests"/>-->
+      <!--<class name="org.dineshv.pomdsl.AlertTests"/>-->
+      <class name="org.dineshv.pomdsl.GenericTests"/>
+    </classes>
+  </test>
+</suite>

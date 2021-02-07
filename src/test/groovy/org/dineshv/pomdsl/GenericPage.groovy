@@ -55,6 +55,8 @@ class GenericPage extends Page {
 
     By triggerButton = By.id('visibility_trigger')
     By clickMeButton = By.id('visibility_target')
+    By spinner = By.id('invisibility_target')
+
 
     click triggerButton
     waitFor clickMeButton toBe visible
@@ -62,7 +64,7 @@ class GenericPage extends Page {
 
 
     triggerButton = By.id('invisibility_trigger')
-    By spinner = By.id('invisibility_target')
+
 
     click triggerButton
     waitFor spinner toBe invisible

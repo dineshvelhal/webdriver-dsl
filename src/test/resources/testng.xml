@@ -6,7 +6,7 @@
       <!--<class name="org.dineshv.pomdsl.PageTests"/>-->
       <!--<class name="org.dineshv.pomdsl.ClickTypeTests"/>-->
       <!--<class name="org.dineshv.pomdsl.AlertTests"/>-->
-      <class name="org.dineshv.pomdsl.GenericTests"/>
+      <class name="org.dineshv.pomdsl.AttributeTests"/>
     </classes>
   </test>
 </suite>

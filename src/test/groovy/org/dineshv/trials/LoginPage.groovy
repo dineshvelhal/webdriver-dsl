@@ -1,6 +1,6 @@
 package org.dineshv.trials
 
-import org.dineshv.groovypages.Page
+import org.dineshv.pomdsl.Page
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 

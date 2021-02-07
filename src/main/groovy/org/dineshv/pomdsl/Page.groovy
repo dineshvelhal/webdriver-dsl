@@ -1,5 +1,7 @@
 package org.dineshv.pomdsl
 
+import groovy.transform.ToString
+import groovy.util.logging.Log4j2
 import org.dineshv.pomdsl.exceptions.InvalidStateException
 import org.dineshv.pomdsl.exceptions.UnknownDestinationException
 import org.openqa.selenium.By
@@ -9,6 +11,7 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 
+@Log4j2
 class Page {
   ////////////////////// CONSTANTS ////////////////////////////
   final inside = 0
@@ -49,6 +52,7 @@ class Page {
    * @param staleElementRetry
    */
   Page(WebDriver driver, wait = Constants.DEFAULT_WAIT, staleElementRetry = Constants.STALE_ELEMENT_RETRY) {
+    log.info "Page constructed [driver=${driver}], [default wait=${wait}], [staleElementRetry=${staleElementRetry}]"
     this.driver = driver
     this.defaultWait = new WebDriverWait(driver, wait)
     this.staleElementRetry = staleElementRetry
@@ -63,7 +67,9 @@ class Page {
    * @return
    */
   def type(input) {
-    [into: { locator -> sendKeys(locator, input) }]
+    [into: { locator ->
+      log.info "typing [${input}] into [${locator}] "
+      sendKeys(locator, input) }]
   }
 
   def move(Map<String, By> m) {
@@ -104,7 +110,11 @@ class Page {
    * @return
    */
   def waitFor(By by) {
-    [toBe: { state -> waitForState(by, state) }]
+    [toBe: { state ->
+
+      log.info "Waiting for the state [${state}] of [${by}]"
+
+      waitForState(by, state) }]
   }
 
   /**
@@ -206,6 +216,8 @@ class Page {
    * @return
    */
   def WebElement findElement(By by) {
+    log.info "findElement([${by})]"
+
     return defaultWait.until(ExpectedConditions.elementToBeClickable(by))
   }
 
@@ -214,13 +226,18 @@ class Page {
    * @param by
    */
   def click(By by) {
+    log.info "click(${by})"
+
     for (int i in 1..staleElementRetry) {
       try {
+        log.info "click retry count: [${i}]"
+
         findElement(by).click()
         break
       } catch (StaleElementReferenceException e) {
         // Do nothing. just make the loop to continue to iterate
-        println e.getMessage()
+
+        log.error "Element [${by}] is stale. Retrying the click..."
       }
     }
   }
@@ -231,13 +248,19 @@ class Page {
    * @param input
    */
   def sendKeys(By by, String input) {
+    log.info "sendKeys(${by}, ${input})"
+
     for (int i in 1..staleElementRetry) {
       try {
+
+        log.info "sendKeys retry count: [${i}]"
+
         findElement(by).sendKeys(input)
         break
       } catch (StaleElementReferenceException e) {
         // Do nothing. just make the loop to continue to iterate
-        println e.getMessage()
+
+        log.error "Element [${by}] is stale. Retrying the sendKeys..."
       }
     }
   }
@@ -249,6 +272,8 @@ class Page {
    * @return
    */
   def navigateTo(String url) {
+    log.info "navigateTo(${url})"
+
     driver.navigate().to(url)
   }
 
@@ -258,11 +283,19 @@ class Page {
    * @return
    */
   def navigate(String dir) {
+    log.info "navigate(${dir})"
+
     if (dir == 'back') {
+      log.info "Navigating back..."
+
       driver.navigate().back()
     } else if (dir == 'forward') {
+      log.info "Navigating forward..."
+
       driver.navigate().forward()
     } else {
+      log.error "Unknown navigation direction"
+
       throw new UnknownDestinationException('Unknown destination: ' + dir)
     }
   }
@@ -282,38 +315,58 @@ class Page {
     }
   }*/
 
+  /**
+   * Adds the extra properties to all locators (By) present as fields in the Page
+   * This method will be called from the child classes of the Page class
+   * @param page
+   */
   void initialize(Page page) {
+
+    log.info "initialize(${page})"
+
     WebDriver driver = page.driver
     MetaClass mc = page.metaClass
 
     mc.properties.each {
       if(it.type.name == 'org.openqa.selenium.By') {
-        //println "${it.name}"
+
+        log.info "Adding extra properties for [${page[it.name]}]"
 
         page[it.name].metaClass.propertyMissing = {String property ->
-          if (property == '$') {
+          /*if (property == '$') {
             return findElement(page[it.name])
           } else if (property == 'text') {
             return findElement(page[it.name]).getText()
           } else {
             return findElement(page[it.name]).getAttribute(property)
-          }
+          }*/
 
           def webElem = findElement(page[it.name])
+
+          log.info "Missing Locator Property = ${property}"
+
+
           switch (property) {
             case '$':
+              log.info "Property returns WebElement ${webElem}"
               return webElem
             case 'text':
+              log.info "Property returns WebElement.getText()"
               return webElem.getText()
             case 'tag':
+              log.info "Property returns WebElement.getTagName()"
               return webElem.getTagName()
             case 'location':
+              log.info "Property returns WebElement.getLocation()"
               return webElem.getLocation()
             case 'size':
+              log.info "Property returns WebElement.getSize()"
               return webElem.getSize()
             case 'rectangle':
+              log.info "Property returns WebElement.getRect()"
               return webElem.getRect()
             default: // treat every other missing property as attribute
+              log.info "Property returns WebElement.getAttribute(\"${property}\")"
               return webElem.getAttribute(property)
           }
         }

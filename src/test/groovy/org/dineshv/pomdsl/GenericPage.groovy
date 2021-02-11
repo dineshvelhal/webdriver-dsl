@@ -5,72 +5,90 @@ import org.openqa.selenium.WebDriver
 
 class GenericPage extends Page {
 
-  public GenericPage(WebDriver driver) {
-    super(driver)
-  }
+   public GenericPage(WebDriver driver) {
+      super(driver)
+   }
 
 
-  public navigationFlow() {
-    navigateTo 'https://dineshvelhal.github.io/testautomation-playground/expected_conditions.html'
+   public navigationFlow() {
+      navigateTo 'https://dineshvelhal.github.io/testautomation-playground/expected_conditions.html'
 
-    navigate back
+      navigate back
 
-    Thread.sleep 3000
+      Thread.sleep 3000
 
-    navigate forward
-  }
+      navigate forward
+   }
 
-  public framesFlow() {
-    By framesButton = By.cssSelector("body > div.container.shadow-lg > div:nth-child(8) > div:nth-child(2) > div > div.card-body.shadow > a")
-    By frame1 = By.id('frame1')
-    By frame2 = By.id('frame2')
-    By frame3 = By.id('frame3')
-    By frame4 = By.id('frame4')
-    By clickMeButton = By.id('button')
+   public framesFlow() {
+      By framesButton = By.cssSelector("body > div.container.shadow-lg > div:nth-child(8) > div:nth-child(2) > div > div.card-body.shadow > a")
+      By frame1 = By.id('frame1')
+      By frame2 = By.id('frame2')
+      By frame3 = By.id('frame3')
+      By frame4 = By.id('frame4')
+      By clickMeButton = By.id('button')
 
-    navigateTo 'https://dineshvelhal.github.io/testautomation-playground'
+      navigateTo 'https://dineshvelhal.github.io/testautomation-playground'
 
-    click framesButton
+      click framesButton
 
-    move into: frame1
-    click clickMeButton
+      move into: frame1
+      click clickMeButton
 
-    move into: frame2
-    click clickMeButton
+      move into: frame2
+      click clickMeButton
 
-    backTo parentFrame
+      backTo parentFrame
 
-    move into: frame3
-    move into: frame4
+      move into: frame3
+      move into: frame4
 
-    click clickMeButton
+      click clickMeButton
 
-    backTo mainPage
+      backTo mainPage
 
-    Thread.sleep 3000
-  }
+      Thread.sleep 3000
+   }
 
-  public expectedConditionsFlow() {
-    navigateTo 'https://dineshvelhal.github.io/testautomation-playground/expected_conditions.html'
+   public expectedConditionsFlow() {
+      navigateTo 'https://dineshvelhal.github.io/testautomation-playground/expected_conditions.html'
 
-    By triggerButton = By.id('visibility_trigger')
-    By clickMeButton = By.id('visibility_target')
-    By spinner = By.id('invisibility_target')
-
-
-    click triggerButton
-    waitFor clickMeButton toBe visible
-    click clickMeButton
+      By triggerButton = By.id('visibility_trigger')
+      By clickMeButton = By.id('visibility_target')
+      By spinner = By.id('invisibility_target')
 
 
-    triggerButton = By.id('invisibility_trigger')
+      click triggerButton
+      waitFor clickMeButton toBe visible
+      click clickMeButton
 
 
-    click triggerButton
-    waitFor spinner toBe invisible
+      triggerButton = By.id('invisibility_trigger')
 
 
+      click triggerButton
+      waitFor spinner toBe invisible
+   }
 
-  }
+   // dropdowns and lists
+   public selectFlow() {
+      navigateTo 'https://dineshvelhal.github.io/testautomation-playground/forms.html'
+
+      By skillDropdown = By.id('select_tool')
+
+      Thread.sleep 5000
+
+      select index: 2 from skillDropdown
+
+      Thread.sleep 5000
+
+      select value: "sel" from skillDropdown
+
+      Thread.sleep 5000
+
+      select visibleText: "Protractor" from skillDropdown
+
+
+   }
 
 }

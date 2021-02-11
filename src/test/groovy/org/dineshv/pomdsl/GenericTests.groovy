@@ -8,44 +8,49 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 class GenericTests {
-  private WebDriver driver
-  GenericPage genericPage
-  String url = "https://dineshvelhal.github.io/testautomation-playground"
+   private WebDriver driver
+   GenericPage genericPage
+   String url = "https://dineshvelhal.github.io/testautomation-playground"
 
-  @BeforeClass
-  void setupClass() {
-    println 'Before Class -------------------------------'
-    WebDriverManager.chromedriver().setup()
+   @BeforeClass
+   void setupClass() {
+      println 'Before Class -------------------------------'
+      WebDriverManager.chromedriver().setup()
 
-    driver = new ChromeDriver()
-    driver.get url
+      driver = new ChromeDriver()
+      driver.get url
 
-    genericPage = new GenericPage(driver)
-  }
+      genericPage = new GenericPage(driver)
+   }
 
-  @AfterClass
-  void tearDown() {
-    println 'After Class -------------------------------'
-    if (driver != null) {
-      Thread.sleep(5000)
-      driver.quit()
-    }
-  }
+   @AfterClass
+   void tearDown() {
+      println 'After Class -------------------------------'
+      if (driver != null) {
+         Thread.sleep(5000)
+         driver.quit()
+      }
+   }
 
-  @Test
-  void frames_flow_test() {
-    genericPage.framesFlow()
-  }
+   @Test(enabled = false)
+   void frames_flow_test() {
+      genericPage.framesFlow()
+   }
 
-  @Test
-  void navigation_flow_test() {
-    genericPage.navigationFlow()
-  }
+   @Test(enabled = false)
+   void navigation_flow_test() {
+      genericPage.navigationFlow()
+   }
 
-  @Test
-  void expected_conditions_test() {
-    genericPage.expectedConditionsFlow()
-  }
+   @Test(enabled = false)
+   void expected_conditions_test() {
+      genericPage.expectedConditionsFlow()
+   }
+
+   @Test
+   void select_test() {
+      genericPage.selectFlow()
+   }
 
 
 }

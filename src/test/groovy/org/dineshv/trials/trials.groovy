@@ -11,15 +11,12 @@ WebDriverManager.chromedriver().setup()
 WebDriver driver
 
 try {
-  driver = new ChromeDriver()
 
-  driver.get 'https://dineshvelhal.github.io/testautomation-playground/frames.html'
+  def a = [1, 2, 3]
 
-  FramesPage fp = new FramesPage(driver)
+  println "a is list is ${a instanceof  List}"
 
-  fp.clickButtons()
 
-  Thread.sleep(5000)
 
 } finally {
   driver.quit()

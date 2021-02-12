@@ -75,19 +75,17 @@ class GenericPage extends Page {
       navigateTo 'https://dineshvelhal.github.io/testautomation-playground/forms.html'
 
       By skillDropdown = By.id('select_tool')
+      By languageList = By.id('select_lang')
 
       Thread.sleep 5000
 
       select index: 2 from skillDropdown
-
-      Thread.sleep 5000
-
       select value: "sel" from skillDropdown
-
-      Thread.sleep 5000
-
       select visibleText: "Protractor" from skillDropdown
 
+      select value: ['java', 'javascript'] from languageList
+      select index: [1, 3] from languageList
+      select visibleText: ['Java', 'Python'] from languageList
 
    }
 

@@ -1,7 +1,8 @@
 package org.dineshv.pomdsl
 
-import groovy.transform.ToString
+
 import groovy.util.logging.Log4j2
+import org.dineshv.pomdsl.exceptions.InvalidKeyException
 import org.dineshv.pomdsl.exceptions.InvalidStateException
 import org.dineshv.pomdsl.exceptions.UnknownDestinationException
 import org.openqa.selenium.By
@@ -75,7 +76,7 @@ class Page {
    }
 
    def move(Map<String, By> m) {
-      log.info("move into frame ${m.get('into')}")
+      log.info("move into frame [${m.get('into')}]")
 
       defaultWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(m.get('into')))
 
@@ -100,36 +101,55 @@ class Page {
    }
 
    // TODO - select from dropdown
-   // syntax select index:1 from dropdown
    def select(Map<String, Object> item) {
-      [from : { locator ->
+      Map.Entry<String, Object> entry = item.entrySet().iterator().next()
+
+      String key = entry.key
+      Object value = entry.value
+
+      [from: { locator ->
          Select se = new Select(findElement(locator))
 
-         if (item.containsKey('index')) {
-            int index = item.get('index')
+         log.info("Selecting [${key}=${value}] from dropdown/list [${locator}]")
 
-            log.info("Selecting index ${index} from ${locator}")
-
-            se.selectByIndex(index)
-         } else if (item.containsKey('value')) {
-            String value = item.get('value')
-
-            log.info("Selecting value ${value} from ${locator}")
-
-            se.selectByValue(value)
-         } else if (item.containsKey('visibleText')) {
-            String visibleText = item.get('visibleText')
-
-            log.info("Selecting value ${visibleText} from ${locator}")
-
-            se.selectByVisibleText(visibleText)
+         if(value instanceof List) {
+            // multi-select
+            switch (key) {
+               case 'value':
+                  //se.selectByValue(value)
+                  value.each {se.selectByValue(it)}
+                  break
+               case 'visibleText':
+                  value.each {se.selectByVisibleText(it)}
+                  //se.selectByVisibleText(value)
+                  break
+               case 'index':
+                  value.each {se.selectByIndex(it)}
+                  // se.selectByIndex(value)
+                  break
+               default:
+                  throw new InvalidKeyException("Invalid key when selecting value from dropdown")
+            }
+         } else {
+            // single select
+            switch (key) {
+               case 'value':
+                  se.selectByValue(value)
+                  break
+               case 'visibleText':
+                  se.selectByVisibleText(value)
+                  break
+               case 'index':
+                  se.selectByIndex(value)
+                  break
+               default:
+                  throw new InvalidKeyException("Invalid key when selecting value from dropdown")
+            }
          }
       }]
    }
 
-   // TODO - select by index
-   // TODO - select by value
-   // TODO - select by visible text
+
    // TODO - select multiple items by index, value or visible text
    // TODO - get all items
    // TODO - get first selected item
@@ -254,7 +274,7 @@ class Page {
     * @return
     */
    def WebElement findElement(By by) {
-      log.info "findElement([${by})]"
+      log.info "findElement [${by}]"
 
       return defaultWait.until(ExpectedConditions.elementToBeClickable(by))
    }
@@ -264,7 +284,7 @@ class Page {
     * @param by
     */
    def click(By by) {
-      log.info "click(${by})"
+      log.info "click [${by}]"
 
       for (int i in 1..staleElementRetry) {
          try {
@@ -286,7 +306,7 @@ class Page {
     * @param input
     */
    def sendKeys(By by, String input) {
-      log.info "sendKeys(${by}, ${input})"
+      log.info "sendKeys [${by}], [${input}]"
 
       for (int i in 1..staleElementRetry) {
          try {
@@ -310,7 +330,7 @@ class Page {
     * @return
     */
    def navigateTo(String url) {
-      log.info "navigateTo(${url})"
+      log.info "navigateTo [${url}]"
 
       driver.navigate().to(url)
    }
@@ -321,7 +341,7 @@ class Page {
     * @return
     */
    def navigate(String dir) {
-      log.info "navigate(${dir})"
+      log.info "navigate [${dir}]"
 
       if (dir == 'back') {
          log.info "Navigating back..."
@@ -360,7 +380,7 @@ class Page {
     */
    void initialize(Page page) {
 
-      log.info "initialize(${page})"
+      log.info "initialize [${page}]"
 
       WebDriver driver = page.driver
       MetaClass mc = page.metaClass
@@ -381,12 +401,12 @@ class Page {
 
                def webElem = findElement(page[it.name])
 
-               log.info "Missing Locator Property = ${property}"
+               log.info "Missing Locator [Property=${property}]"
 
 
                switch (property) {
                   case '$':
-                     log.info "Property returns WebElement ${webElem}"
+                     log.info "Property returns [WebElement=${webElem}]"
                      return webElem
                   case 'text':
                      log.info "Property returns WebElement.getText()"

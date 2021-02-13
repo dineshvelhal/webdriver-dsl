@@ -2,7 +2,7 @@ package org.dineshv.pomdsl
 
 
 import groovy.util.logging.Log4j2
-import org.dineshv.pomdsl.exceptions.InvalidKeyException
+import org.dineshv.pomdsl.exceptions.InvalidOptionException
 import org.dineshv.pomdsl.exceptions.InvalidStateException
 import org.dineshv.pomdsl.exceptions.UnknownDestinationException
 import org.openqa.selenium.By
@@ -18,15 +18,20 @@ class Page {
    ////////////////////// CONSTANTS ////////////////////////////
    final inside = 0
    final until = 1
-   final parentFrame = 2
-   final mainPage = 3
-   final back = 'back'
-   final forward = 'forward'
+   final PARENT_FRAME = 2
+   final MAIN_PAGE = 3
+   final BACK = 'back'
+   final FORWARD = 'forward'
 
-   final visible = 0
-   final invisible = 1
-   final clickable = 2
-   final selected = 3
+   final VISIBLE = 0
+   final INVISIBLE = 1
+   final CLICKABLE = 2
+   final SELECTED = 3
+
+   // dropdown / list
+   final ALL = 'all'
+   final FIRST_SELECTED = 'first_selected'
+   final ALL_SELECTED = 'all_selected'
    //final stale = 4
 
 
@@ -79,7 +84,6 @@ class Page {
       log.info("move into frame [${m.get('into')}]")
 
       defaultWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(m.get('into')))
-
    }
 
    /**
@@ -88,11 +92,11 @@ class Page {
     * @return
     */
    def backTo(int a) {
-      if (a == parentFrame) {
+      if (a == PARENT_FRAME) {
          log.info("move back to parent frame")
 
          driver.switchTo().parentFrame()
-      } else if (a == mainPage) {
+      } else if (a == MAIN_PAGE) {
          log.info("move back to main page (default content)")
 
          driver.switchTo().defaultContent()
@@ -100,7 +104,7 @@ class Page {
 
    }
 
-   // TODO - select from dropdown
+   // https://www.toolsqa.com/selenium-webdriver/dropdown-in-selenium/
    def select(Map<String, Object> item) {
       Map.Entry<String, Object> entry = item.entrySet().iterator().next()
 
@@ -113,7 +117,16 @@ class Page {
          log.info("Selecting [${key}=${value}] from dropdown/list [${locator}]")
 
          if(value instanceof List) {
-            // multi-select
+            try {
+               if (locator.multiple) {
+                  log.info "Dropdown/list [${locator}] is a multi-select list"
+               } else {
+                  log.warn "You are trying to select multiple values from single-select list/dropdown [${locator}]. Only last option will be finally selected"
+               }
+            } catch(MissingPropertyException e) {
+               log.warn "You are trying to select multiple values from single-select list/dropdown [${locator}]. Only last option will be finally selected"
+            }
+
             switch (key) {
                case 'value':
                   //se.selectByValue(value)
@@ -128,7 +141,7 @@ class Page {
                   // se.selectByIndex(value)
                   break
                default:
-                  throw new InvalidKeyException("Invalid key when selecting value from dropdown")
+                  throw new InvalidOptionException("Invalid option [${key}] when selecting value from dropdown [${locator}]")
             }
          } else {
             // single select
@@ -143,25 +156,142 @@ class Page {
                   se.selectByIndex(value)
                   break
                default:
-                  throw new InvalidKeyException("Invalid key when selecting value from dropdown")
+                  throw new InvalidOptionException("Invalid option [${key}] when selecting value from dropdown/list [${locator}]")
+            }
+         }
+      }]
+   }
+
+   def deselect(Map<String, Object> option) {
+      Map.Entry<String, Object> entry = option.entrySet().iterator().next()
+
+      String key = entry.key
+      Object value = entry.value
+
+      [from: { locator ->
+         Select se = new Select(findElement(locator))
+
+         log.info("Deselecting [${key}=${value}] from dropdown/list [${locator}]")
+
+         if(value instanceof List) {
+
+            switch (key) {
+               case 'value':
+                  //se.selectByValue(value)
+                  value.each {se.deselectByValue(it)}
+                  break
+               case 'visibleText':
+                  value.each {se.deselectByVisibleText(it)}
+                  //se.selectByVisibleText(value)
+                  break
+               case 'index':
+                  value.each {se.deselectByIndex(it)}
+                  // se.selectByIndex(value)
+                  break
+               default:
+                  throw new InvalidOptionException("Invalid option [${key}] when deselecting value from list [${locator}]")
+            }
+         } else {
+            // single select
+            switch (key) {
+               case 'value':
+                  se.deselectByValue(value)
+                  break
+               case 'visibleText':
+                  se.deselectByVisibleText(value)
+                  break
+               case 'index':
+                  se.deselectByIndex(value)
+                  break
+               default:
+                  throw new InvalidOptionException("Invalid option [${key}] when deselecting value from list [${locator}]")
             }
          }
       }]
    }
 
 
-   // TODO - select multiple items by index, value or visible text
+   def deselect(String all) {
+      if(all == 'all') {
+         [from: { locator ->
+            log.info("De-selecting all values from list [${locator}]")
+
+            Select se = new Select(findElement(locator))
+            se.deselectAll()
+         }]
+      } else {
+         // invalid option
+         throw new InvalidOptionException("Invalid option [${all}] while de-selecting values from the list")
+      }
+   }
+
    // TODO - get all items
    // TODO - get first selected item
    // TODO - get all selected items
-   // TODO - unselect all
-   // TODO - unselect by index, value or visible text
-   // https://www.toolsqa.com/selenium-webdriver/dropdown-in-selenium/
+   def get(Map<String, String> options) {
+      Map.Entry<String, Object> entry = options.entrySet().iterator().next()
 
-   // TODO - select from list
+      String key = entry.key
+      Object value = entry.value
+
+      if(key != "options") {
+         throw new InvalidOptionException("Invalid option [$key] while getting the options from list/dropdown")
+      }
+
+      [from: {locator ->
+         Select se = new Select(findElement(locator))
+
+         log.info("Returning [${value}] options from dropdown/list [${locator}]")
+
+         switch (value) {
+            case ALL:
+               return se.options
+               break
+            case FIRST_SELECTED:
+               return se.firstSelectedOption
+               break
+            case ALL_SELECTED:
+               return se.allSelectedOptions
+               break
+         }
+      }]
+   }
+
+
+
    // TODO - select check boxes
    // TODO - select radio buttons
+   def check(By locator) {
+      String type = locator.type
 
+      log.info "Checking the $type [$locator]"
+
+      if(locator.selected) {
+         log.warn("$type [$locator] is already checked")
+         //do nothing
+      } else {
+         click locator
+      }
+   }
+
+   // TODO - Uncheck checkbox
+   def uncheck(By locator) {
+      String type = locator.type
+
+      log.info "Unchecking the $type [$locator]"
+
+      if(type == "checkbox") {
+         if(locator.selected) {
+            click locator
+         } else {
+            log.warn("$type [$locator] is already unchecked")
+            //do nothing
+         }
+      } else {
+         log.warn("$type cannot be unchecked")
+         // TODO - need to decide if error must be thrown here or not
+      }
+   }
 
    /**
     *
@@ -185,16 +315,16 @@ class Page {
     */
    def waitForState(By by, int state) {
       switch (state) {
-         case visible:
+         case VISIBLE:
             defaultWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by))
             break
-         case invisible:
+         case INVISIBLE:
             defaultWait.until(ExpectedConditions.invisibilityOfElementLocated(by))
             break
-         case clickable:
+         case CLICKABLE:
             defaultWait.until(ExpectedConditions.elementToBeClickable(by))
             break
-         case selected:
+         case SELECTED:
             defaultWait.until(ExpectedConditions.elementToBeSelected(by))
             break
             /*case stale:
@@ -401,31 +531,47 @@ class Page {
 
                def webElem = findElement(page[it.name])
 
-               log.info "Missing Locator [Property=${property}]"
+               log.info "Missing property [${property}]"
 
 
                switch (property) {
                   case '$':
-                     log.info "Property returns [WebElement=${webElem}]"
+                     log.info "Missing property [${property}] returns [WebElement=${webElem}]"
                      return webElem
                   case 'text':
-                     log.info "Property returns WebElement.getText()"
+                     log.info "Missing property [${property}] returns WebElement.getText()"
                      return webElem.getText()
                   case 'tag':
-                     log.info "Property returns WebElement.getTagName()"
+                     log.info "Missing property [${property}] returns WebElement.getTagName()"
                      return webElem.getTagName()
                   case 'location':
-                     log.info "Property returns WebElement.getLocation()"
+                     log.info "Missing property [${property}] returns WebElement.getLocation()"
                      return webElem.getLocation()
                   case 'size':
-                     log.info "Property returns WebElement.getSize()"
+                     log.info "Missing property [${property}] returns WebElement.getSize()"
                      return webElem.getSize()
                   case 'rectangle':
-                     log.info "Property returns WebElement.getRect()"
+                     log.info "Missing property [${property}] returns WebElement.getRect()"
                      return webElem.getRect()
+                  case 'selected':
+                     log.info "Missing property [${property}] returns WebElement.selected"
+                     return webElem.selected
+                  case 'enabled':
+                     log.info "Missing property [${property}] returns WebElement.enabled"
+                     return webElem.enabled
+                  case 'displayed':
+                     log.info "Missing property [${property}] returns WebElement.visible"
+                     return webElem.displayed
                   default: // treat every other missing property as attribute
-                     log.info "Property returns WebElement.getAttribute(\"${property}\")"
-                     return webElem.getAttribute(property)
+                     log.info "Missing property [${property}] returns WebElement.getAttribute(\"${property}\")"
+
+                     String attr = webElem.getAttribute(property)
+
+                     if(attr == null) {
+                        log.error "Most probably the attribute [${property}] is missing in the Web Element [${webElem}]"
+                     }
+
+                     return attr
                }
             }
          }
@@ -445,7 +591,7 @@ class Page {
          body.call()
       } finally {
          // to ensure control goes back to parent frame irrespective of exceptions
-         backTo parentFrame
+         backTo PARENT_FRAME
       }
    }
 }

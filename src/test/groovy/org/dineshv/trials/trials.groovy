@@ -12,10 +12,7 @@ WebDriver driver
 
 try {
 
-  def a = [1, 2, 3]
-
-  println "a is list is ${a instanceof  List}"
-
+  driver.get ''
 
 
 } finally {

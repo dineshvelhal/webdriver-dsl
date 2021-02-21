@@ -47,12 +47,12 @@ class GenericTests {
       genericPage.expectedConditionsFlow()
    }
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    void select_test() {
       genericPage.selectFlow()
    }
 
-   @Test
+   @Test(enabled = false)
    void checkbox_radiobutton_test() {
       genericPage.checkboxRadioButtonFlow()
    }

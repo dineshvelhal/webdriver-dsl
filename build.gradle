@@ -1,5 +1,6 @@
 plugins {
     id 'groovy'
+    id 'maven-publish'
 }
 
 group 'org.dineshv'
@@ -26,5 +27,24 @@ dependencies {
 test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
+    }
+}
+
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHub"
+            url = uri("https://maven.pkg.github.com/dineshvelhal/pom-dsl-package")
+            credentials {
+                username = 'dineshvelhal' //project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = 'fdafcf9b4f564945db9de7606b1319cc2e54e8d6' //project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
     }
 }

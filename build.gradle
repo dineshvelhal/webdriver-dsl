@@ -1,6 +1,6 @@
 plugins {
     id 'groovy'
-    id 'maven-publish'
+    // id 'maven-publish'
 }
 
 group 'org.dineshv'
@@ -11,17 +11,17 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:3.0.7'
-    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.0.0-alpha-7'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
+    implementation group: 'org.codehaus.groovy',        name: 'groovy-all',     version:'3.0.7'
+    implementation group: 'org.seleniumhq.selenium',    name: 'selenium-java',  version: '4.0.0-alpha-7'
+    implementation group: 'org.apache.logging.log4j',   name: 'log4j-core',     version: '2.14.0'
+    implementation group: 'org.apache.logging.log4j',   name: 'log4j-api',      version: '2.14.0'
 
 
 
-    testImplementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '4.3.1'
-    testImplementation group: 'org.testng', name: 'testng', version: '7.3.0'
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
+    testImplementation group: 'io.github.bonigarcia',       name: 'webdrivermanager',   version: '4.3.1'
+    testImplementation group: 'org.testng',                 name: 'testng',             version: '7.3.0'
+    testImplementation group: 'org.apache.logging.log4j',   name: 'log4j-core',         version: '2.14.0'
+    testImplementation group: 'org.apache.logging.log4j',   name: 'log4j-api',          version: '2.14.0'
 }
 
 test {
@@ -31,20 +31,21 @@ test {
 }
 
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHub"
-            url = uri("https://maven.pkg.github.com/dineshvelhal/pom-dsl-package")
-            credentials {
-                username = 'dineshvelhal' //project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = 'fdafcf9b4f564945db9de7606b1319cc2e54e8d6' //project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
+// No publishing to GitHub
+//publishing {
+//    repositories {
+//        maven {
+//            name = "GitHub"
+//            url = uri("https://maven.pkg.github.com/dineshvelhal/pom-dsl-package")
+//            credentials {
+//                username = 'dineshvelhal' //project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+//                password = 'fdafcf9b4f564945db9de7606b1319cc2e54e8d6' //project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+//            }
+//        }
+//    }
+//    publications {
+//        gpr(MavenPublication) {
+//            from(components.java)
+//        }
+//    }
+//}

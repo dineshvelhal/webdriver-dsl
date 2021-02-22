@@ -20,6 +20,8 @@ class GenericTests {
       driver = new ChromeDriver()
       driver.get url
 
+      driver.manage().window().maximize()
+
       genericPage = new GenericPage(driver)
    }
 
@@ -52,7 +54,7 @@ class GenericTests {
       genericPage.selectFlow()
    }
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    void checkbox_radiobutton_test() {
       genericPage.checkboxRadioButtonFlow()
    }

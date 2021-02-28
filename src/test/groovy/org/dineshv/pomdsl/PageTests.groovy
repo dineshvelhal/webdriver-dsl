@@ -34,21 +34,37 @@ class PageTests {
 
     @Test
     void page_title_test() {
-        def title = page.title()
+        def title = page.title
 
-        println "title:${title}, window_handle:${page.windowHandle()}"
+        println "title:${title}"
 
         assert title == 'The Test Automation Playground'
     }
 
     @Test
     void page_url_test() {
-        def url = page.url()
+        def url = page.url
 
         println "url:${url}"
 
         assert url == 'https://dineshvelhal.github.io/testautomation-playground/'
     }
 
+    @Test
+    void page_source_test() {
+        def source = page.source
 
+        println "source:${source}"
+
+        assert source != ''
+    }
+
+    @Test
+    void window_handle_test() {
+        def handle = page.windowHandle
+
+        println "window handle:[${handle}]"
+
+        assert handle != ''
+    }
 }

@@ -3,10 +3,10 @@
 
   <test name="Tests">
     <classes>
-      <!--<class name="org.dineshv.pomdsl.PageTests"/>-->
+      <!--<class name="PageTests"/>-->
       <!--<class name="org.dineshv.pomdsl.ClickTypeTests"/>-->
-      <!--<class name="org.dineshv.pomdsl.AlertTests"/>-->
-      <class name="org.dineshv.pomdsl.GenericTests"/>
+      <!--<class name="AlertTests"/>-->
+      <class name="GenericTests"/>
     </classes>
   </test>
 </suite>

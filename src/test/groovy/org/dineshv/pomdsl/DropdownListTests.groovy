@@ -1,13 +1,16 @@
 package org.dineshv.pomdsl
 
+import groovy.util.logging.Log4j2
 import io.github.bonigarcia.wdm.WebDriverManager
+import org.dinshv.pomdsl.pages.GenericPage
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
-class GenericTests {
+@Log4j2
+class DropdownListTests {
    private WebDriver driver
    GenericPage genericPage
    String url = "https://dineshvelhal.github.io/testautomation-playground"
@@ -29,34 +32,14 @@ class GenericTests {
    void tearDown() {
       println 'After Class -------------------------------'
       if (driver != null) {
-         Thread.sleep(5000)
+         // Thread.sleep(5000)
          driver.quit()
       }
    }
 
-   @Test(enabled = false)
-   void frames_flow_test() {
-      genericPage.framesFlow()
-   }
-
-   @Test(enabled = false)
-   void navigation_flow_test() {
-      genericPage.navigationFlow()
-   }
-
-   @Test(enabled = false)
-   void expected_conditions_test() {
-      genericPage.expectedConditionsFlow()
-   }
 
    @Test(enabled = true)
    void select_test() {
       genericPage.selectFlow()
    }
-
-   @Test(enabled = true)
-   void checkbox_radiobutton_test() {
-      genericPage.checkboxRadioButtonFlow()
-   }
-
 }

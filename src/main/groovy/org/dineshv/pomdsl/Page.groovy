@@ -3,8 +3,6 @@ package org.dineshv.pomdsl
 
 import groovy.util.logging.Log4j2
 import org.dineshv.pomdsl.exceptions.InvalidOptionException
-import org.dineshv.pomdsl.exceptions.InvalidStateException
-import org.dineshv.pomdsl.exceptions.UnknownDestinationException
 import org.openqa.selenium.By
 import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebDriver
@@ -23,10 +21,10 @@ class Page {
    final BACK = 'back'
    final FORWARD = 'forward'
 
-   final VISIBLE = 0
-   final INVISIBLE = 1
-   final CLICKABLE = 2
-   final SELECTED = 3
+   final VISIBLE = 'VISIBLE'
+   final INVISIBLE = 'INVISIBLE'
+   final CLICKABLE = 'CLICKABLE'
+   final SELECTED = 'SELECTED'
 
    // dropdown / list
    final ALL = 'all'
@@ -65,6 +63,16 @@ class Page {
       this.staleElementRetry = staleElementRetry
    }
 
+   def setDefaultWait(int waitInSeconds) {
+      log.info("Setting defaultWait to [$waitInSeconds] seconds")
+      defaultWait = new WebDriverWait(driver, waitInSeconds)
+   }
+
+   def refreshPage() {
+      log.info("Refreshing page")
+
+      driver.navigate().refresh()
+   }
 
    // fluent way to type something
    // example - type 'hello' into text field
@@ -75,34 +83,13 @@ class Page {
     */
    def type(input) {
       [into: { locator ->
-         log.info "typing [${input}] into [${locator}] "
-         sendKeys(locator, input)
+         log.info "typing [${input}] into [${locator}]"
+
+         writeText(locator, input)
       }]
    }
 
-   def move(Map<String, By> m) {
-      log.info("move into frame [${m.get('into')}]")
 
-      defaultWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(m.get('into')))
-   }
-
-   /**
-    *
-    * @param a
-    * @return
-    */
-   def backTo(int a) {
-      if (a == PARENT_FRAME) {
-         log.info("move back to parent frame")
-
-         driver.switchTo().parentFrame()
-      } else if (a == MAIN_PAGE) {
-         log.info("move back to main page (default content)")
-
-         driver.switchTo().defaultContent()
-      }
-
-   }
 
    // https://www.toolsqa.com/selenium-webdriver/dropdown-in-selenium/
    def select(Map<String, Object> item) {
@@ -116,32 +103,32 @@ class Page {
 
          log.info("Selecting [${key}=${value}] from dropdown/list [${locator}]")
 
-         if(value instanceof List) {
+         if (value instanceof List) {
             try {
                if (locator.multiple) {
                   log.info "Dropdown/list [${locator}] is a multi-select list"
                } else {
                   log.warn "You are trying to select multiple values from single-select list/dropdown [${locator}]. Only last option will be finally selected"
                }
-            } catch(MissingPropertyException e) {
+            } catch (MissingPropertyException e) {
                log.warn "You are trying to select multiple values from single-select list/dropdown [${locator}]. Only last option will be finally selected"
             }
 
             switch (key) {
                case 'value':
                   //se.selectByValue(value)
-                  value.each {se.selectByValue(it)}
+                  value.each { se.selectByValue(it) }
                   break
                case 'visibleText':
-                  value.each {se.selectByVisibleText(it)}
+                  value.each { se.selectByVisibleText(it) }
                   //se.selectByVisibleText(value)
                   break
                case 'index':
-                  value.each {se.selectByIndex(it)}
+                  value.each { se.selectByIndex(it) }
                   // se.selectByIndex(value)
                   break
                default:
-                  throw new InvalidOptionException("Invalid option [${key}] when selecting value from dropdown [${locator}]")
+                  throw new org.dineshv.pomdsl.exceptions.InvalidOptionException("Invalid option [${key}] when selecting value from dropdown [${locator}]")
             }
          } else {
             // single select
@@ -156,7 +143,7 @@ class Page {
                   se.selectByIndex(value)
                   break
                default:
-                  throw new InvalidOptionException("Invalid option [${key}] when selecting value from dropdown/list [${locator}]")
+                  throw new org.dineshv.pomdsl.exceptions.InvalidOptionException("Invalid option [${key}] when selecting value from dropdown/list [${locator}]")
             }
          }
       }]
@@ -173,19 +160,19 @@ class Page {
 
          log.info("Deselecting [${key}=${value}] from dropdown/list [${locator}]")
 
-         if(value instanceof List) {
+         if (value instanceof List) {
 
             switch (key) {
                case 'value':
                   //se.selectByValue(value)
-                  value.each {se.deselectByValue(it)}
+                  value.each { se.deselectByValue(it) }
                   break
                case 'visibleText':
-                  value.each {se.deselectByVisibleText(it)}
+                  value.each { se.deselectByVisibleText(it) }
                   //se.selectByVisibleText(value)
                   break
                case 'index':
-                  value.each {se.deselectByIndex(it)}
+                  value.each { se.deselectByIndex(it) }
                   // se.selectByIndex(value)
                   break
                default:
@@ -212,7 +199,7 @@ class Page {
 
 
    def deselect(String all) {
-      if(all == 'all') {
+      if (all == 'all') {
          [from: { locator ->
             log.info("De-selecting all values from list [${locator}]")
 
@@ -234,11 +221,11 @@ class Page {
       String key = entry.key
       Object value = entry.value
 
-      if(key != "options") {
+      if (key != "options") {
          throw new InvalidOptionException("Invalid option [$key] while getting the options from list/dropdown")
       }
 
-      [from: {locator ->
+      [from: { locator ->
          Select se = new Select(findElement(locator))
 
          log.info("Returning [${value}] options from dropdown/list [${locator}]")
@@ -258,7 +245,6 @@ class Page {
    }
 
 
-
    // TODO - select check boxes
    // TODO - select radio buttons
    def check(By locator) {
@@ -266,7 +252,7 @@ class Page {
 
       log.info "Checking the $type [$locator]"
 
-      if(locator.selected) {
+      if (locator.selected) {
          log.warn("$type [$locator] is already checked")
          //do nothing
       } else {
@@ -280,8 +266,8 @@ class Page {
 
       log.info "Unchecking the $type [$locator]"
 
-      if(type == "checkbox") {
-         if(locator.selected) {
+      if (type == "checkbox") {
+         if (locator.selected) {
             click locator
          } else {
             log.warn("$type [$locator] is already unchecked")
@@ -313,7 +299,7 @@ class Page {
     * @param state
     * @return
     */
-   def waitForState(By by, int state) {
+   def waitForState(By by, String state) {
       switch (state) {
          case VISIBLE:
             defaultWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by))
@@ -331,7 +317,7 @@ class Page {
               defaultWait.until(ExpectedConditions.stalenessOf(findElement(by)))*/
             break
          default:
-            throw new InvalidStateException("Invalid state [${state}]for the element: [${by}]")
+            throw new org.dineshv.pomdsl.exceptions.InvalidStateException("Invalid state [${state}]for the element: [${by}]")
       }
    }
 
@@ -353,6 +339,7 @@ class Page {
     * @return
     */
    def accept(Closure c) {
+      log.info 'Accepting alert'
       c.call().accept()
    }
 
@@ -362,40 +349,8 @@ class Page {
     * @return
     */
    def dismiss(Closure c) {
+      log.info 'Dismissing alert'
       c.call().dismiss()
-   }
-
-
-   /**
-    *
-    * @return
-    */
-   String title() {
-      driver.getTitle()
-   }
-
-   /**
-    *
-    * @return
-    */
-   String url() {
-      driver.currentUrl
-   }
-
-   /**
-    *
-    * @return
-    */
-   String source() {
-      driver.pageSource
-   }
-
-   /**
-    *
-    * @return
-    */
-   String windowHandle() {
-      driver.windowHandle
    }
 
    /**
@@ -435,15 +390,16 @@ class Page {
     * @param by
     * @param input
     */
-   def sendKeys(By by, String input) {
-      log.info "sendKeys [${by}], [${input}]"
+   def writeText(By by, String input) {
+      log.info "sendKeys [locator=${by}], text=[${input}]"
 
       for (int i in 1..staleElementRetry) {
          try {
-
             log.info "sendKeys retry count: [${i}]"
 
-            findElement(by).sendKeys(input)
+            WebElement txt = findElement(by)
+            txt.sendKeys('')
+            txt.sendKeys(input)
             break
          } catch (StaleElementReferenceException e) {
             // Do nothing. just make the loop to continue to iterate
@@ -453,17 +409,6 @@ class Page {
       }
    }
 
-
-   /**
-    *
-    * @param url
-    * @return
-    */
-   def navigateTo(String url) {
-      log.info "navigateTo [${url}]"
-
-      driver.navigate().to(url)
-   }
 
    /**
     *
@@ -482,100 +427,35 @@ class Page {
 
          driver.navigate().forward()
       } else {
-         log.error "Unknown navigation direction"
-
-         throw new UnknownDestinationException('Unknown destination: ' + dir)
+         log.error "Navigating to url [$dir]"
+         driver.navigate().to(dir)
+         // throw new UnknownDestinationException('Unknown destination: ' + dir)
       }
    }
 
-   /**
-    * Adds the extra features to the By locator
-    * @param webDriver
-    * @param metaProperties
-    */
-   /*void addFeaturesToLocators(WebDriver webDriver, List<MetaProperty> metaProperties) {
-     metaProperties.each {
-       if(it.type.name == 'org.openqa.selenium.By') {
-         println "${it.name}"
-         println "The locator is ${this.loginButton}"
-         this[it.name].metaClass.newProperty = 'newProperty'
-       }
-     }
-   }*/
+
+   def move(Map<String, By> m) {
+      log.info("move into frame [${m.get('into')}]")
+
+      defaultWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(m.get('into')))
+   }
 
    /**
-    * Adds the extra properties to all locators (By) present as fields in the Page
-    * This method will be called from the child classes of the Page class
-    * @param page
+    *
+    * @param a
+    * @return
     */
-   void initialize(Page page) {
+   def back_to(int a) {
+      if (a == PARENT_FRAME) {
+         log.info("move back to parent frame")
 
-      log.info "initialize [${page}]"
+         driver.switchTo().parentFrame()
+      } else if (a == MAIN_PAGE) {
+         log.info("move back to main page (default content)")
 
-      WebDriver driver = page.driver
-      MetaClass mc = page.metaClass
-
-      mc.properties.each {
-         if (it.type.name == 'org.openqa.selenium.By') {
-
-            log.info "Adding extra properties for [${page[it.name]}]"
-
-            page[it.name].metaClass.propertyMissing = { String property ->
-               /*if (property == '$') {
-                 return findElement(page[it.name])
-               } else if (property == 'text') {
-                 return findElement(page[it.name]).getText()
-               } else {
-                 return findElement(page[it.name]).getAttribute(property)
-               }*/
-
-               def webElem = findElement(page[it.name])
-
-               log.info "Missing property [${property}]"
-
-
-               switch (property) {
-                  case '$':
-                     log.info "Missing property [${property}] returns [WebElement=${webElem}]"
-                     return webElem
-                  case 'text':
-                     log.info "Missing property [${property}] returns WebElement.getText()"
-                     return webElem.getText()
-                  case 'tag':
-                     log.info "Missing property [${property}] returns WebElement.getTagName()"
-                     return webElem.getTagName()
-                  case 'location':
-                     log.info "Missing property [${property}] returns WebElement.getLocation()"
-                     return webElem.getLocation()
-                  case 'size':
-                     log.info "Missing property [${property}] returns WebElement.getSize()"
-                     return webElem.getSize()
-                  case 'rectangle':
-                     log.info "Missing property [${property}] returns WebElement.getRect()"
-                     return webElem.getRect()
-                  case 'selected':
-                     log.info "Missing property [${property}] returns WebElement.selected"
-                     return webElem.selected
-                  case 'enabled':
-                     log.info "Missing property [${property}] returns WebElement.enabled"
-                     return webElem.enabled
-                  case 'displayed':
-                     log.info "Missing property [${property}] returns WebElement.visible"
-                     return webElem.displayed
-                  default: // treat every other missing property as attribute
-                     log.info "Missing property [${property}] returns WebElement.getAttribute(\"${property}\")"
-
-                     String attr = webElem.getAttribute(property)
-
-                     if(attr == null) {
-                        log.error "Most probably the attribute [${property}] is missing in the Web Element [${webElem}]"
-                     }
-
-                     return attr
-               }
-            }
-         }
+         driver.switchTo().defaultContent()
       }
+
    }
 
    /**
@@ -584,14 +464,167 @@ class Page {
     * @param body
     * @return
     */
-   def frame(By frame, Closure body) {
+   def frame(def frame, Closure body) {
       move into: frame
 
       try {
          body.call()
       } finally {
          // to ensure control goes back to parent frame irrespective of exceptions
-         backTo PARENT_FRAME
+         back_to PARENT_FRAME
       }
+   }
+
+
+   /////////// Locator wrapper methods //////////////////////////////
+   By byClassName(String className) {
+      log.info("returning locator for className=[$className]")
+
+      By by = By.className(className)
+      addProperties(by)
+      return by
+   }
+
+   By byCssSelector(String cssSelector) {
+      log.info("returning locator for cssSelector=[$cssSelector]")
+
+      By by = By.cssSelector(cssSelector)
+      addProperties(by)
+      return by
+   }
+
+   By byId(String id) {
+      log.info("returning locator for Id=[$id]")
+
+      By by = By.id(id)
+      addProperties(by)
+      return by
+   }
+
+   By byLinkText(String linkText) {
+      log.info("returning locator for linkText=[$linkText]")
+
+      By by = By.linkText(linkText)
+      addProperties(by)
+      return by
+   }
+
+   By byName(String name) {
+      log.info("returning locator for name=[$name]")
+
+      By by = By.name(name)
+      addProperties(by)
+      return by
+   }
+
+   By byPartialLinkText(String partialLinkText) {
+      log.info("returning locator for partialLinkText=[$partialLinkText]")
+
+      By by = By.partialLinkText(partialLinkText)
+      addProperties(by)
+      return by
+   }
+
+   By byTagName(String tagName) {
+      log.info("returning locator for tagName=[$tagName]")
+
+      By by = By.tagName(tagName)
+      addProperties(by)
+      return by
+   }
+
+   By byXpath(String xpath) {
+      log.info("returning locator for xpath=[$xpath]")
+
+      By by = By.xpath(xpath)
+      addProperties(by)
+      return by
+   }
+
+   def addProperties(By by) {
+      log.info("Adding new properties to the locator [$by]")
+
+      by.metaClass.propertyMissing = { String property ->
+
+         def webElem
+
+         log.info "Missing property [${property}]"
+
+         switch (property) {
+            case '$':
+               log.info "Missing property [${property}] returns [WebElement=${webElem}]"
+               webElem = findElement(by)
+               return webElem
+            case 'text':
+               log.info "Missing property [${property}] returns WebElement.getText()"
+               webElem = driver.findElement(by)
+               return webElem.getText()
+            case 'tag':
+               log.info "Missing property [${property}] returns WebElement.getTagName()"
+               webElem = driver.findElement(by)
+               return webElem.getTagName()
+            case 'location':
+               log.info "Missing property [${property}] returns WebElement.getLocation()"
+               webElem = driver.findElement(by)
+               return webElem.getLocation()
+            case 'size':
+               log.info "Missing property [${property}] returns WebElement.getSize()"
+               webElem = driver.findElement(by)
+               return webElem.getSize()
+            case 'rectangle':
+               log.info "Missing property [${property}] returns WebElement.getRect()"
+               webElem = driver.findElement(by)
+               return webElem.getRect()
+            case 'selected':
+               log.info "Missing property [${property}] returns WebElement.selected"
+               webElem = driver.findElement(by)
+               return webElem.selected
+            case 'enabled':
+               log.info "Missing property [${property}] returns WebElement.enabled"
+               webElem = driver.findElement(by)
+               return webElem.enabled
+            case 'displayed':
+               log.info "Missing property [${property}] returns WebElement.visible"
+               webElem = driver.findElement(by)
+               return webElem.displayed
+            default: // treat every other missing property as attribute
+               log.info "Missing property [${property}] returns WebElement.getAttribute(\"${property}\")"
+               webElem = driver.findElement(by)
+               String attr = webElem.getAttribute(property)
+
+               if (attr == null) {
+                  log.error "Most probably the attribute [${property}] is missing in the Web Element [${webElem}]"
+               }
+               return attr
+         }
+      }
+   }
+
+   def propertyMissing(String name) {
+      log.info "Missing property [$name] of ${this.class.name} being accessed"
+
+      String property;
+      switch (name) {
+         case 'title':
+            property = driver.title
+            break
+         case 'url':
+            property = driver.currentUrl
+            break
+         case 'source':
+            property = driver.pageSource
+            break
+         case 'windowHandle':
+            property = driver.windowHandle
+            break
+         case 'windowHandles':
+            property = driver.windowHandles
+            break
+         default:
+            throw new org.dineshv.pomdsl.exceptions.InvalidPropertyException("property [$name] is not supported by ${this.class.name}")
+      }
+
+      log.info "Property [$name] = [$property]"
+      return property
    }
 }

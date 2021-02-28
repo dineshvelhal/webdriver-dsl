@@ -1,18 +1,18 @@
 package org.dineshv.pomdsl
 
+import groovy.util.logging.Log4j2
 import io.github.bonigarcia.wdm.WebDriverManager
-import org.dinshv.pomdsl.pages.AlertsPage
-import org.openqa.selenium.TimeoutException
-import org.openqa.selenium.UnhandledAlertException
+import org.dinshv.pomdsl.pages.ExpectedConditionsPage
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
-class AlertTests {
+@Log4j2
+class ExpectedConditionsTests {
    private WebDriver driver
-   AlertsPage alertsPage
+   ExpectedConditionsPage expectedConditionsPage
    String url = "https://dineshvelhal.github.io/testautomation-playground/expected_conditions.html"
 
    @BeforeClass
@@ -22,47 +22,33 @@ class AlertTests {
 
       driver = new ChromeDriver()
       driver.get url
+
       driver.manage().window().maximize()
-      alertsPage = new AlertsPage(driver)
+
+      expectedConditionsPage = new ExpectedConditionsPage(driver)
    }
 
    @AfterClass
    void tearDown() {
       println 'After Class -------------------------------'
       if (driver != null) {
-         Thread.sleep(5000)
+         Thread.sleep(2000)
          driver.quit()
       }
    }
 
-
    @Test
-   void alert_test() {
-      alertsPage.acceptAlert()
+   void visibility_test() {
+      expectedConditionsPage.visibilityFlow()
    }
 
    @Test
-   void accept_prompt_test() {
-      alertsPage.acceptPrompt()
+   void invisibility_test() {
+      expectedConditionsPage.invisibilityFlow()
    }
 
    @Test
-   void dismiss_prompt_test() {
-      alertsPage.dismissPrompt()
-   }
-
-   @Test()
-   void alert_timeout_test() {
-      boolean exceptionOccured = false
-
-      try {
-         alertsPage.alertTimeOut()
-      } catch (TimeoutException e) {
-         exceptionOccured = true
-      } catch (UnhandledAlertException e) {
-         exceptionOccured = true
-      }
-
-      assert exceptionOccured == true
+   void enabled_test() {
+      expectedConditionsPage.enabledFlow()
    }
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'org.dineshv'
-version '0.1-SNAPSHOT'
+version '0.2-SNAPSHOT'
 
 repositories {
    mavenCentral()
@@ -28,23 +28,3 @@ test {
       suites 'src/test/resources/' + System.getProperty('test_suite')
    }
 }
-
-
-// No publishing to GitHub
-//publishing {
-//    repositories {
-//        maven {
-//            name = "GitHub"
-//            url = uri("https://maven.pkg.github.com/dineshvelhal/pom-dsl-package")
-//            credentials {
-//                username = 'dineshvelhal' //project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-//                password = 'fdafcf9b4f564945db9de7606b1319cc2e54e8d6' //project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-//            }
-//        }
-//    }
-//    publications {
-//        gpr(MavenPublication) {
-//            from(components.java)
-//        }
-//    }
-//}

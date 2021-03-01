@@ -1,4 +1,4 @@
-package org.dineshv.pomdsl
+package org.dineshv.pomdsl.unittests
 
 import groovy.util.logging.Log4j2
 import io.github.bonigarcia.wdm.WebDriverManager

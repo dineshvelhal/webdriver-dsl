@@ -1,6 +1,7 @@
-package org.dineshv.pomdsl
+package org.dineshv.pomdsl.unittests
 
 import io.github.bonigarcia.wdm.WebDriverManager
+import org.dineshv.pomdsl.Page
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.testng.annotations.AfterClass
@@ -9,7 +10,7 @@ import org.testng.annotations.Test
 
 class PageTests {
     private WebDriver driver
-    Page page
+   Page page
     String url = "https://dineshvelhal.github.io/testautomation-playground/"
 
     @BeforeClass

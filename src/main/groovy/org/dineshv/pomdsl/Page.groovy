@@ -3,7 +3,10 @@ package org.dineshv.pomdsl
 
 import groovy.util.logging.Log4j2
 import org.dineshv.pomdsl.exceptions.InvalidOptionException
+import org.dineshv.pomdsl.exceptions.InvalidPropertyException
+import org.dineshv.pomdsl.exceptions.InvalidStateException
 import org.openqa.selenium.By
+import org.openqa.selenium.Cookie
 import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
@@ -14,8 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait
 @Log4j2
 class Page {
    ////////////////////// CONSTANTS ////////////////////////////
-   final inside = 0
-   final until = 1
+//   final inside = 0
+//   final until = 1
    final PARENT_FRAME = 2
    final MAIN_PAGE = 3
    final BACK = 'back'
@@ -57,7 +60,7 @@ class Page {
     * @param staleElementRetry
     */
    Page(WebDriver driver, wait = Constants.DEFAULT_WAIT, staleElementRetry = Constants.STALE_ELEMENT_RETRY) {
-      log.info "Page constructed [driver=${driver}], [default wait=${wait}], [staleElementRetry=${staleElementRetry}]"
+      log.info "Page constructed [driver=${driver}], [default wait=${wait} seconds], [staleElementRetry=${staleElementRetry}]"
       this.driver = driver
       this.defaultWait = new WebDriverWait(driver, wait)
       this.staleElementRetry = staleElementRetry
@@ -128,7 +131,7 @@ class Page {
                   // se.selectByIndex(value)
                   break
                default:
-                  throw new org.dineshv.pomdsl.exceptions.InvalidOptionException("Invalid option [${key}] when selecting value from dropdown [${locator}]")
+                  throw new InvalidOptionException("Invalid option [${key}] when selecting value from dropdown [${locator}]")
             }
          } else {
             // single select
@@ -143,7 +146,7 @@ class Page {
                   se.selectByIndex(value)
                   break
                default:
-                  throw new org.dineshv.pomdsl.exceptions.InvalidOptionException("Invalid option [${key}] when selecting value from dropdown/list [${locator}]")
+                  throw new InvalidOptionException("Invalid option [${key}] when selecting value from dropdown/list [${locator}]")
             }
          }
       }]
@@ -317,7 +320,7 @@ class Page {
               defaultWait.until(ExpectedConditions.stalenessOf(findElement(by)))*/
             break
          default:
-            throw new org.dineshv.pomdsl.exceptions.InvalidStateException("Invalid state [${state}]for the element: [${by}]")
+            throw new InvalidStateException("Invalid state [${state}]for the element: [${by}]")
       }
    }
 
@@ -546,7 +549,7 @@ class Page {
 
       by.metaClass.propertyMissing = { String property ->
 
-         def webElem
+         WebElement webElem
 
          log.info "Missing property [${property}]"
 
@@ -621,10 +624,57 @@ class Page {
             property = driver.windowHandles
             break
          default:
-            throw new org.dineshv.pomdsl.exceptions.InvalidPropertyException("property [$name] is not supported by ${this.class.name}")
+            throw new InvalidPropertyException("property [$name] is not supported by ${this.class.name}")
       }
 
       log.info "Property [$name] = [$property]"
       return property
+   }
+
+
+   /////////// Cookie Management /////////////////////////
+   String getCookieValue(String cookieName) {
+      log.info("Returning the value of cookie [$cookieName]")
+      Cookie cookie = driver.manage().getCookieNamed(cookieName)
+
+      return cookie.value
+   }
+
+   Cookie getCookie(String cookieName) {
+      log.info("Returning the cookie of name [$cookieName]")
+      Cookie cookie = driver.manage().getCookieNamed(cookieName)
+
+      return cookie
+   }
+
+   Set<Cookie> getAllCookies() {
+      log.info("Returning all the cookies")
+      Set<Cookie> cookies = driver.manage().getCookies()
+
+      return cookies
+   }
+
+   def deleteCookie(String cookieName) {
+      log.info("Deleting the cookie of name [$cookieName]")
+
+      driver.manage().deleteCookieNamed(cookieName)
+   }
+
+   def deleteCookie(Cookie cookie) {
+      log.info("Deleting the cookie [$cookie]")
+
+      driver.manage().deleteCookie(cookie)
+   }
+
+   def deleteAllCookies() {
+      log.info("Deleting all cookies")
+
+      driver.manage().deleteAllCookies()
+   }
+
+   def addCookie(String cookieName, String value) {
+      log.info("Adding the cookie [$cookieName]=[$value]")
+
+      driver.manage().addCookie(new Cookie(cookieName, value))
    }
 }

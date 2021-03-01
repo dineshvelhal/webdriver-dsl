@@ -1,4 +1,4 @@
-package org.dineshv.pomdsl
+package org.dineshv.pomdsl.unittests
 
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.dinshv.pomdsl.pages.AlertsPage

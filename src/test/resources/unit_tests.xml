@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="POM DSL Unit Test Suite" verbose="1">
+
+  <test name="Unit Tests" thread-count="4" parallel="classes">
+    <classes>
+      <class name="org.dineshv.pomdsl.unittests.AttributeTests"/>
+      <class name="org.dineshv.pomdsl.unittests.NavigationTests"/>
+      <class name="org.dineshv.pomdsl.unittests.AlertTests"/>
+      <class name="org.dineshv.pomdsl.unittests.FrameTests"/>
+      <class name="org.dineshv.pomdsl.unittests.NavigationTests"/>
+      <class name="org.dineshv.pomdsl.unittests.PageTests"/>
+      <class name="org.dineshv.pomdsl.unittests.DropdownListTests"/>
+      <class name="org.dineshv.pomdsl.unittests.RadiobuttonCheckBoxTests"/>
+      <class name="org.dineshv.pomdsl.unittests.ExpectedConditionsTests"/>
+    </classes>
+  </test>
+</suite>

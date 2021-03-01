@@ -14,17 +14,13 @@ class LoginPage extends Page {
 
   LoginPage(WebDriver driver) {
     super(driver)
-
-    // initialize(this)
   }
 
-
-
   def login(userName, password) {
-
     type userName into userNameField
     type password into passwordField
-
     click loginButton
+
+    return new ConfirmationPage(driver)
   }
 }

@@ -38,15 +38,10 @@ class Page {
 
    /////////////////////////////////////////////////////////////
 
-   /**
-    *
-    */
-   def WebDriver driver
 
-   /**
-    *
-    */
+   def WebDriver driver
    def WebDriverWait defaultWait
+   int wait
 
    /**
     *
@@ -62,6 +57,7 @@ class Page {
    Page(WebDriver driver, wait = Constants.DEFAULT_WAIT, staleElementRetry = Constants.STALE_ELEMENT_RETRY) {
       log.info "Page constructed [driver=${driver}], [default wait=${wait} seconds], [staleElementRetry=${staleElementRetry}]"
       this.driver = driver
+      this.wait = wait
       this.defaultWait = new WebDriverWait(driver, wait)
       this.staleElementRetry = staleElementRetry
    }
@@ -401,12 +397,11 @@ class Page {
             log.info "sendKeys retry count: [${i}]"
 
             WebElement txt = findElement(by)
-            txt.sendKeys('')
+            txt.clear()
             txt.sendKeys(input)
             break
          } catch (StaleElementReferenceException e) {
             // Do nothing. just make the loop to continue to iterate
-
             log.error "Element [${by}] is stale. Retrying the sendKeys..."
          }
       }
@@ -484,7 +479,8 @@ class Page {
       log.info("returning locator for className=[$className]")
 
       By by = By.className(className)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -492,7 +488,8 @@ class Page {
       log.info("returning locator for cssSelector=[$cssSelector]")
 
       By by = By.cssSelector(cssSelector)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -500,7 +497,8 @@ class Page {
       log.info("returning locator for Id=[$id]")
 
       By by = By.id(id)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -508,7 +506,8 @@ class Page {
       log.info("returning locator for linkText=[$linkText]")
 
       By by = By.linkText(linkText)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -516,7 +515,8 @@ class Page {
       log.info("returning locator for name=[$name]")
 
       By by = By.name(name)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -524,7 +524,8 @@ class Page {
       log.info("returning locator for partialLinkText=[$partialLinkText]")
 
       By by = By.partialLinkText(partialLinkText)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -532,7 +533,8 @@ class Page {
       log.info("returning locator for tagName=[$tagName]")
 
       By by = By.tagName(tagName)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
@@ -540,11 +542,12 @@ class Page {
       log.info("returning locator for xpath=[$xpath]")
 
       By by = By.xpath(xpath)
-      addProperties(by)
+      addPropertiesToLocators(by)
+      addMethodsToLocators(by)
       return by
    }
 
-   def addProperties(By by) {
+   private addPropertiesToLocators(By by) {
       log.info("Adding new properties to the locator [$by]")
 
       by.metaClass.propertyMissing = { String property ->
@@ -556,7 +559,7 @@ class Page {
          switch (property) {
             case '$':
                log.info "Missing property [${property}] returns [WebElement=${webElem}]"
-               webElem = findElement(by)
+               webElem = driver.findElement(by)
                return webElem
             case 'text':
                log.info "Missing property [${property}] returns WebElement.getText()"
@@ -593,13 +596,36 @@ class Page {
             default: // treat every other missing property as attribute
                log.info "Missing property [${property}] returns WebElement.getAttribute(\"${property}\")"
                webElem = driver.findElement(by)
-               String attr = webElem.getAttribute(property)
+               def attr = webElem.getAttribute(property)
 
                if (attr == null) {
                   log.error "Most probably the attribute [${property}] is missing in the Web Element [${webElem}]"
                }
                return attr
          }
+      }
+   }
+
+   private addMethodsToLocators(By by) {
+      log.info("Adding new properties to the locator [$by]")
+
+      by.metaClass.methodMissing = { String name, args ->
+
+         WebElement webElem
+         def value
+
+         log.info "Missing method [${name}]"
+
+         if(name == 'css' && args.size() == 1 && args[0].class.name == 'java.lang.String'){
+            println "Missing method [name=$name] with [args=${args[0]}] returns WebElement.getCssValue(${args[0]})"
+            webElem = driver.findElement(by)
+            String cssProperty = args[0]
+            return webElem.getCssValue(cssProperty)
+         }
+         else {
+            throw new MissingMethodException("Invalid method [name=$name] with [args=${args[0]}]")
+         }
+
       }
    }
 
@@ -676,5 +702,40 @@ class Page {
       log.info("Adding the cookie [$cookieName]=[$value]")
 
       driver.manage().addCookie(new Cookie(cookieName, value))
+
+   }
+
+   def timeOut(int timeOutSeconds, Closure closure) {
+      log.info("Entering block with timeout = $timeOutSeconds seconds")
+
+      int originalTimeOut = wait
+
+      try {
+         wait = timeOutSeconds
+         defaultWait = new WebDriverWait(driver, timeOutSeconds)
+
+         closure.call()
+
+      } catch(Exception e) {
+         log.error("Exception in running block with timeOut = $timeOutSeconds seconds")
+         throw e
+      } finally {
+         log.info("Exiting the block and setting timeout to original value of $originalTimeOut seconds")
+         wait = originalTimeOut
+         defaultWait = new WebDriverWait(driver, originalTimeOut)
+      }
+   }
+
+
+   static {
+      log.info('Initializing the time units at the load time')
+      Number.metaClass {
+         getSeconds = {delegate}
+         getSecond = {delegate}
+         getMinute = {delegate * 60.seconds}
+         getMinutes = {delegate * 60.seconds}
+         getHour = {delegate * 60.seconds * 60.seconds}
+         getHours = {delegate * 60.seconds * 60.seconds}
+      }
    }
 }

@@ -28,10 +28,6 @@ class GenericPage extends Page {
       assert title == 'The Test Automation Playground'
    }
 
-
-
-
-
    // dropdowns and lists
    public selectFlow() {
       By skillDropdown = byId('select_tool')

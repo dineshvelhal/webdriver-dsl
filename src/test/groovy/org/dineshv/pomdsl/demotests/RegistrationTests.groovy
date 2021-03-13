@@ -1,48 +1,24 @@
 package org.dineshv.pomdsl.demotests
 
 import io.github.bonigarcia.wdm.WebDriverManager
+import org.dineshv.pomdsl.main.BaseTest
 import org.dinshv.pomdsl.pages.ConfirmationPage
-import org.dinshv.pomdsl.pages.LoginPage
 import org.dinshv.pomdsl.pages.RegistrationPage
-import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 
-class RegistrationTests {
-   private WebDriver driver
-   RegistrationPage registrationPage
-
-   ConfirmationPage confirmationPage
-
+class RegistrationTests extends BaseTest{
    String url = "https://dineshvelhal.github.io/testautomation-playground/register.html"
-
-   @BeforeClass
-   void setupClass() {
-      println 'Before Class -------------------------------'
-      WebDriverManager.chromedriver().setup()
-
-      driver = new ChromeDriver()
-      driver.get url
-
-      registrationPage = new RegistrationPage(driver)
-   }
-
-   @AfterClass
-   void tearDown() {
-      println 'After Class -------------------------------'
-      if (driver != null) {
-         sleep 2000
-         driver.quit()
-      }
-   }
-
+   RegistrationPage registrationPage
+   ConfirmationPage confirmationPage
 
    @Test
    void successful_registration_test() {
-      registrationPage.navigate url
+      open url
+      registrationPage = new RegistrationPage(driver)
 
       confirmationPage = registrationPage.register(
             'dinesh',
@@ -59,7 +35,8 @@ class RegistrationTests {
 
    @Test(dataProvider = 'incorrect-registration-data')
    void incorrect_registration_test(String firstName, String lastName, String email, String password1, String password2, boolean acceptTerms) {
-      registrationPage.navigate url
+      open url
+      registrationPage = new RegistrationPage(driver)
 
       confirmationPage = registrationPage.register(firstName, lastName, email, password1, password2, acceptTerms)
 

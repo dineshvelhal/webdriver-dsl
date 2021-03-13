@@ -1,44 +1,19 @@
 package org.dineshv.pomdsl.demotests
 
-import io.github.bonigarcia.wdm.WebDriverManager
+import org.dineshv.pomdsl.main.BaseTest
 import org.dinshv.pomdsl.pages.ConfirmationPage
 import org.dinshv.pomdsl.pages.LoginPage
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 
-class LoginTests {
-   private WebDriver driver
-   LoginPage loginPage
+class LoginTests extends BaseTest{
    String url = "https://dineshvelhal.github.io/testautomation-playground/login.html"
-
-   @BeforeClass
-   void setupClass() {
-      println 'Before Class -------------------------------'
-      WebDriverManager.chromedriver().setup()
-
-      driver = new ChromeDriver()
-      driver.get url
-
-      loginPage = new LoginPage(driver)
-   }
-
-   @AfterClass
-   void tearDown() {
-      println 'After Class -------------------------------'
-      if (driver != null) {
-         sleep 2000
-         driver.quit()
-      }
-   }
-
+   LoginPage loginPage
 
    @Test
    void successful_login_test() {
-      loginPage.navigate url
+      open url
+      loginPage = new LoginPage(driver)
 
       ConfirmationPage confirmationPage = loginPage.login('admin', 'admin')
 
@@ -49,7 +24,8 @@ class LoginTests {
 
    @Test(dataProvider = 'incorrect-user-data')
    void failed_login_test(String userName, String password) {
-      loginPage.navigate url
+      open url
+      loginPage = new LoginPage(driver)
 
       ConfirmationPage confirmationPage = loginPage.login(userName, password)
 

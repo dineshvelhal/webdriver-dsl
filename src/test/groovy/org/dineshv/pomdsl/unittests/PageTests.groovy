@@ -1,71 +1,58 @@
 package org.dineshv.pomdsl.unittests
 
-import io.github.bonigarcia.wdm.WebDriverManager
 import org.dineshv.pomdsl.Page
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
+import org.dineshv.pomdsl.main.BaseTest
 import org.testng.annotations.Test
 
-class PageTests {
-    private WebDriver driver
+class PageTests extends BaseTest{
+   String url = "https://dineshvelhal.github.io/testautomation-playground/"
    Page page
-    String url = "https://dineshvelhal.github.io/testautomation-playground/"
 
-    @BeforeClass
-    void setupClass() {
-        println 'Before Class -------------------------------'
-        WebDriverManager.chromedriver().setup()
+   @Test
+   void page_title_test() {
+      open url
+      page = new Page(driver)
 
-        driver = new ChromeDriver()
-        driver.get url
+      def title = page.title
 
-        page = new Page(driver)
-    }
+      println "title:${title}"
 
-    @AfterClass
-    void tearDown() {
-        println 'After Class -------------------------------'
-        if (driver != null) {
-            driver.quit()
-        }
-    }
+      assert title == 'The Test Automation Playground'
+   }
 
+   @Test
+   void page_url_test() {
+      open url
+      page = new Page(driver)
 
-    @Test
-    void page_title_test() {
-        def title = page.title
+      def url = page.url
 
-        println "title:${title}"
+      println "url:${url}"
 
-        assert title == 'The Test Automation Playground'
-    }
+      assert url == 'https://dineshvelhal.github.io/testautomation-playground/'
+   }
 
-    @Test
-    void page_url_test() {
-        def url = page.url
+   @Test
+   void page_source_test() {
+      open url
+      page = new Page(driver)
 
-        println "url:${url}"
+      def source = page.source
 
-        assert url == 'https://dineshvelhal.github.io/testautomation-playground/'
-    }
+      println "source:${source}"
 
-    @Test
-    void page_source_test() {
-        def source = page.source
+      assert source != ''
+   }
 
-        println "source:${source}"
+   @Test
+   void window_handle_test() {
+      open url
+      page = new Page(driver)
 
-        assert source != ''
-    }
+      def handle = page.windowHandle
 
-    @Test
-    void window_handle_test() {
-        def handle = page.windowHandle
+      println "window handle:[${handle}]"
 
-        println "window handle:[${handle}]"
-
-        assert handle != ''
-    }
+      assert handle != ''
+   }
 }

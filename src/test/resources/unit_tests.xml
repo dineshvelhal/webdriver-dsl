@@ -4,17 +4,16 @@
   <test name="Unit Tests" thread-count="4" parallel="classes">
     <classes>
       <class name="org.dineshv.pomdsl.unittests.AttributeTests"/>
-<!--      <class name="org.dineshv.pomdsl.unittests.NavigationTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.AlertTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.FrameTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.NavigationTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.PageTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.DropdownListTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.RadiobuttonCheckBoxTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.ExpectedConditionsTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.CookieTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.ClickAndTypeTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.unittests.BlockTimeoutTests"/>-->
+      <class name="org.dineshv.pomdsl.unittests.AlertTests"/>
+      <class name="org.dineshv.pomdsl.unittests.FrameTests"/>
+      <class name="org.dineshv.pomdsl.unittests.NavigationTests"/>
+      <class name="org.dineshv.pomdsl.unittests.PageTests"/>
+      <class name="org.dineshv.pomdsl.unittests.DropdownListTests"/>
+      <class name="org.dineshv.pomdsl.unittests.RadiobuttonCheckBoxTests"/>
+      <class name="org.dineshv.pomdsl.unittests.ExpectedConditionsTests"/>
+      <class name="org.dineshv.pomdsl.unittests.CookieTests"/>
+      <class name="org.dineshv.pomdsl.unittests.ClickAndTypeTests"/>
+      <class name="org.dineshv.pomdsl.unittests.BlockTimeoutTests"/>
     </classes>
   </test>
 </suite>

@@ -1,43 +1,18 @@
 package org.dineshv.pomdsl.unittests
 
-import io.github.bonigarcia.wdm.WebDriverManager
+import org.dineshv.pomdsl.main.BaseTest
 import org.dinshv.pomdsl.pages.LoginPage
 import org.openqa.selenium.Cookie
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
-class CookieTests {
-   private WebDriver driver
-   LoginPage lp
+class CookieTests extends BaseTest{
    String url = "https://dineshvelhal.github.io/testautomation-playground/login.html"
-
-   @BeforeClass
-   void setupClass() {
-      println 'Before Class -------------------------------'
-      WebDriverManager.chromedriver().setup()
-
-      driver = new ChromeDriver()
-      driver.get url
-
-      lp = new LoginPage(driver)
-   }
-
-   @AfterClass
-   void tearDown() {
-      println 'After Class -------------------------------'
-      if (driver != null) {
-         sleep 2000
-         driver.quit()
-      }
-   }
-
+   LoginPage lp
 
    @Test
    void add_cookie_test() {
-      lp.navigate url
+      open url
+      lp = new LoginPage(driver)
 
       lp.deleteAllCookies()
 
@@ -53,7 +28,8 @@ class CookieTests {
 
    @Test
    void delete_cookie_test() {
-      lp.navigate url
+      open url
+      lp = new LoginPage(driver)
 
       lp.deleteAllCookies()
 

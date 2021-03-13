@@ -3,8 +3,8 @@
 
   <test name="Demo Tests" thread-count="2" parallel="classes">
     <classes>
-<!--      <class name="org.dineshv.pomdsl.demotests.LoginTests"/>-->
-<!--      <class name="org.dineshv.pomdsl.demotests.RegistrationTests"/>-->
+      <class name="org.dineshv.pomdsl.demotests.LoginTests"/>
+      <class name="org.dineshv.pomdsl.demotests.RegistrationTests"/>
       <class name="org.dineshv.pomdsl.demotests.CookieTests"/>
     </classes>
   </test>

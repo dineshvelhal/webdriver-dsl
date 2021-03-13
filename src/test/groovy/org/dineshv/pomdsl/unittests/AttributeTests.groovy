@@ -1,49 +1,20 @@
 package org.dineshv.pomdsl.unittests
 
 import groovy.util.logging.Log4j2
-import io.github.bonigarcia.wdm.WebDriverManager
+import org.dineshv.pomdsl.main.BaseTest
 import org.dinshv.pomdsl.pages.AttributesPage
-import org.dinshv.pomdsl.pages.LoginPage
-import org.openqa.selenium.By
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 @Log4j2
-class AttributeTests {
-  private WebDriver driver
+class AttributeTests extends BaseTest{
   String url = "https://dineshvelhal.github.io/testautomation-playground/forms.html"
-
   AttributesPage ap
-
-  @BeforeClass
-  void setupClass() {
-    println 'Before Class -------------------------------'
-    WebDriverManager.chromedriver().setup()
-
-    driver = new ChromeDriver()
-    driver.manage().window().maximize()
-    driver.get url
-
-    ap = new AttributesPage(driver)
-  }
-
-  @AfterClass
-  void tearDown() {
-    println 'After Class -------------------------------'
-
-    Thread.sleep(5000)
-
-    if (driver != null) {
-      driver.quit()
-    }
-  }
-
 
   @Test
   void attribute_test() {
+    open url
+    ap = new AttributesPage(driver)
+
     ap.type '5' into ap.experienceTextBox
     assert ap.experienceTextBox.value == '5'
 

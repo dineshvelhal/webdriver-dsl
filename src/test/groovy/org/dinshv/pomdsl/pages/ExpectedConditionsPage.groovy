@@ -18,8 +18,8 @@ class ExpectedConditionsPage extends Page {
    }
 
    def setMinMaxWait(int min, int max) {
-      type min.toString() into minWait
-      type max.toString() into maxWait
+      clearAndType min.toString() into minWait
+      clearAndType max.toString() into maxWait
    }
 
    def visibilityFlow() {
@@ -83,10 +83,10 @@ class ExpectedConditionsPage extends Page {
       assert disabledButton.enabled == true
 
       refreshPage()
-      setMinMaxWait(10, 15)
+      setMinMaxWait(4, 7)
 
       // Following code should pass with the block-level timeOut of 15 seconds
-      timeOut(15.seconds) {
+      timeOut(7.seconds) {
          assert disabledButton.enabled == false
          click triggerButton
          waitFor disabledButton toBe CLICKABLE

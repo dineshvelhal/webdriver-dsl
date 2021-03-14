@@ -23,21 +23,21 @@ class FramesPage extends Page {
       frame(frame1) {
          // Now all interactions will occur inside frame1
          click clickMeButton
-         assert clickMeButton.text == 'CLICKED'
+         assert clickMeButton.text == 'Clicked'
 
          frame(frame3) {
             // Now all interactions will occur inside frame3
             frame(frame4) {
                // Now all interactions will occur inside frame4
                click clickMeButton
-               assert clickMeButton.text == 'CLICKED'
+               assert clickMeButton.text == 'Clicked'
             }
          }
 
          frame(frame2) {
             // Now all interactions will occur inside frame2
             click clickMeButton
-            assert clickMeButton.text == 'CLICKED'
+            assert clickMeButton.text == 'Clicked'
          }
       }
    }
@@ -49,21 +49,21 @@ class FramesPage extends Page {
       frame(0) {
          // Now all interactions will occur inside frame1
          click clickMeButton
-         assert clickMeButton.text == 'CLICKED'
+         assert clickMeButton.text == 'Clicked'
 
          frame(1) {
             // Now all interactions will occur inside frame3
             frame(0) {
                // Now all interactions will occur inside frame4
                click clickMeButton
-               assert clickMeButton.text == 'CLICKED'
+               assert clickMeButton.text == 'Clicked'
             }
          }
 
          frame(0) {
             // Now all interactions will occur inside frame2
             click clickMeButton
-            assert clickMeButton.text == 'CLICKED'
+            assert clickMeButton.text == 'Clicked'
          }
       }
    }

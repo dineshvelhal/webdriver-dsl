@@ -14,6 +14,7 @@
       <class name="org.dineshv.pomdsl.unittests.CookieTests"/>
       <class name="org.dineshv.pomdsl.unittests.ClickAndTypeTests"/>
       <class name="org.dineshv.pomdsl.unittests.BlockTimeoutTests"/>
+      <class name="org.dineshv.pomdsl.unittests.MouseActionsTests"/>
     </classes>
   </test>
 </suite>

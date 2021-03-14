@@ -11,7 +11,7 @@ class KeyboardActionsTests extends BaseTest{
   String url = "https://dineshvelhal.github.io/testautomation-playground/keyboard_events.html"
   KeyboardActionsPage keyboardActionsPage
 
-  @Test(enabled = false)
+  @Test(enabled = true)
   void modifier_keys_test() {
     open url
 
@@ -20,7 +20,7 @@ class KeyboardActionsTests extends BaseTest{
     keyboardActionsPage.modifierKeysFlow()
   }
 
-  @Test(enabled = false)
+  @Test(enabled = true)
   void special_keys_test() {
     open url
 
@@ -29,7 +29,7 @@ class KeyboardActionsTests extends BaseTest{
     keyboardActionsPage.specialKeysFlow()
   }
 
-  @Test(enabled = false)
+  @Test(enabled = true)
   void keys_and_strings_test() {
     open url
 
@@ -47,7 +47,7 @@ class KeyboardActionsTests extends BaseTest{
     keyboardActionsPage.keysCombinationFlow()
   }
 
-  @Test(enabled = false)
+  @Test(enabled = true)
   void clear_and_type_test() {
     open url
 

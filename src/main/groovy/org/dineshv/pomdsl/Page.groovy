@@ -87,11 +87,19 @@ class Page {
     * @param input
     * @return
     */
-   def type( String input) {
+   def type(String input) {
       [into: { locator ->
          log.info "typing [${input}] into [${locator}]"
 
          writeText(locator, input)
+      }]
+   }
+
+   def type(Keys input) {
+      [into: { locator ->
+         log.info "typing [${input}] into [${locator}]"
+
+         writeText(locator, input.toString())
       }]
    }
 
@@ -103,9 +111,9 @@ class Page {
       }]
    }
 
-   def keys(CharSequence... value) {
-      return Keys.chord(value)
-   }
+//   def keys(CharSequence... value) {
+//      return Keys.chord(value)
+//   }
 
 
    // https://www.toolsqa.com/selenium-webdriver/dropdown-in-selenium/

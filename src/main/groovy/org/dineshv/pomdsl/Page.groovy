@@ -8,6 +8,7 @@ import org.dineshv.pomdsl.exceptions.InvalidStateException
 import org.dineshv.pomdsl.exceptions.UnsupportedFeatureException
 import org.openqa.selenium.By
 import org.openqa.selenium.Cookie
+import org.openqa.selenium.Keys
 import org.openqa.selenium.Point
 import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebDriver
@@ -86,12 +87,24 @@ class Page {
     * @param input
     * @return
     */
-   def type(input) {
+   def type( String input) {
       [into: { locator ->
          log.info "typing [${input}] into [${locator}]"
 
          writeText(locator, input)
       }]
+   }
+
+   def clearAndType( String input) {
+      [into: { locator ->
+         log.info "typing [${input}] into [${locator}]"
+
+         clearAndWriteText(locator, input)
+      }]
+   }
+
+   def keys(CharSequence... value) {
+      return Keys.chord(value)
    }
 
 
@@ -395,6 +408,24 @@ class Page {
     * @param input
     */
    def writeText(By by, String input) {
+      log.info "sendKeys [locator=${by}], text=[${input}]"
+
+      for (int i in 1..staleElementRetry) {
+         try {
+            log.info "sendKeys retry count: [${i}]"
+
+            WebElement txt = findElement(by)
+            // txt.clear()
+            txt.sendKeys(input)
+            break
+         } catch (StaleElementReferenceException e) {
+            // Do nothing. just make the loop to continue to iterate
+            log.error "Element [${by}] is stale. Retrying the sendKeys..."
+         }
+      }
+   }
+
+   def clearAndWriteText(By by, String input) {
       log.info "sendKeys [locator=${by}], text=[${input}]"
 
       for (int i in 1..staleElementRetry) {

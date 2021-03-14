@@ -23,7 +23,7 @@ class BaseTest {
 
    @AfterClass
    void tearDown() {
-      Thread.sleep(5000)
+      Thread.sleep(1000)
 
       if (driver != null) {
          driver.quit()

@@ -3,7 +3,7 @@ package org.dinshv.pomdsl.pages
 import groovy.util.logging.Log4j2
 import org.dineshv.pomdsl.Page
 import org.openqa.selenium.By
-import org.openqa.selenium.Keys
+import static org.openqa.selenium.Keys.*
 import org.openqa.selenium.WebDriver
 
 @Log4j2
@@ -24,65 +24,89 @@ class KeyboardActionsPage extends Page {
       refreshPage()
 
       // Ctrl
-      type keys(Keys.CONTROL) into textArea
+      type CONTROL into textArea
       assert ctrlKeyIndicator.displayed == true
 
       // Alt
-      type keys(Keys.ALT) into textArea
+      type ALT into textArea
       assert altKeyIndicator.displayed == true
 
       // Shift
-      type keys(Keys.SHIFT) into textArea
+      type SHIFT into textArea
       assert shiftKeyIndicator.displayed == true
 
       // Meta
-      type keys(Keys.META) into textArea
+      type META into textArea
       assert metaKeyIndicator.displayed == true
-   }
-
-   def combinationKeysFlow() {
-      refreshPage()
-
-      // Ctrl+A
-      type keys(Keys.CONTROL, 'A') into textArea
-      assert ctrlKeyIndicator.displayed == true
-      assert keyIndicator.text == 'A'
    }
 
    def specialKeysFlow() {
       refreshPage()
 
       // Page Down
-      type keys(Keys.PAGE_DOWN) into textArea
+      type PAGE_DOWN into textArea
       assert keyIndicator.text == 'PageDown'
       assert keyCodeIndicator.text == 'PageDown'
 
       // Delete
-      type keys(Keys.DELETE) into textArea
+      type DELETE into textArea
       assert keyIndicator.text == 'Delete'
       assert keyCodeIndicator.text == 'Delete'
    }
 
-   def copyPasteFlow() {
+//   def copyPasteFlow() {
+//      refreshPage()
+//
+//      def string = 'selenium'
+//
+//      // type and assert
+//      type string into textArea
+//      assert textArea.value == string
+//
+//      // Copy text
+//      type keys(CONTROL, 'a') into textArea
+//      type keys(CONTROL, 'c') into textArea
+//
+//      // Delete text
+//      type keys(DELETE) into textArea
+//      assert textArea.value == ''
+//
+//      // Paste text
+//      type keys(CONTROL, 'v') into textArea
+//      assert textArea.value == string
+//   }
+
+   def keysAndStringCombinationFlow() {
       refreshPage()
 
       def string = 'selenium'
 
       // type and assert
-      type string into textArea
+      type string + CONTROL + 'a' into textArea
       assert textArea.value == string
 
       // Copy text
-      type keys(Keys.CONTROL, 'a') into textArea
-      type keys(Keys.CONTROL, 'c') into textArea
+      type CONTROL + 'c' into textArea
 
       // Delete text
-      type keys(Keys.DELETE) into textArea
+      type DELETE into textArea
       assert textArea.value == ''
 
       // Paste text
-      type keys(Keys.CONTROL, 'v') into textArea
+      type CONTROL + 'v' into textArea
       assert textArea.value == string
+   }
+
+   def keysCombinationFlow() {
+      refreshPage()
+
+      type CONTROL + ALT + SHIFT + META into textArea
+      assert ctrlKeyIndicator.displayed == true
+      assert altKeyIndicator.displayed == true
+      assert shiftKeyIndicator.displayed == true
+      assert metaKeyIndicator.displayed == true
+
+      sleep 3000
    }
 
    def clearAndTypeFlow() {

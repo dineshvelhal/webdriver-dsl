@@ -5,14 +5,19 @@ import groovy.util.logging.Log4j2
 import org.dineshv.pomdsl.exceptions.InvalidOptionException
 import org.dineshv.pomdsl.exceptions.InvalidPropertyException
 import org.dineshv.pomdsl.exceptions.InvalidStateException
+import org.dineshv.pomdsl.exceptions.UnsupportedFeatureException
 import org.openqa.selenium.By
 import org.openqa.selenium.Cookie
+import org.openqa.selenium.Point
 import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.WebDriverWait
+
+import java.time.Duration
 
 @Log4j2
 class Page {
@@ -35,6 +40,7 @@ class Page {
    final ALL_SELECTED = 'all_selected'
    //final stale = 4
 
+   final MOUSE = 'mouse'
 
    /////////////////////////////////////////////////////////////
 
@@ -87,7 +93,6 @@ class Page {
          writeText(locator, input)
       }]
    }
-
 
 
    // https://www.toolsqa.com/selenium-webdriver/dropdown-in-selenium/
@@ -616,13 +621,12 @@ class Page {
 
          log.info "Missing method [${name}]"
 
-         if(name == 'css' && args.size() == 1 && args[0].class.name == 'java.lang.String'){
+         if (name == 'css' && args.size() == 1 && args[0].class.name == 'java.lang.String') {
             println "Missing method [name=$name] with [args=${args[0]}] returns WebElement.getCssValue(${args[0]})"
             webElem = driver.findElement(by)
             String cssProperty = args[0]
             return webElem.getCssValue(cssProperty)
-         }
-         else {
+         } else {
             throw new MissingMethodException("Invalid method [name=$name] with [args=${args[0]}]")
          }
 
@@ -716,7 +720,7 @@ class Page {
 
          closure.call()
 
-      } catch(Exception e) {
+      } catch (Exception e) {
          log.error("Exception in running block with timeOut = $timeOutSeconds seconds")
          throw e
       } finally {
@@ -727,15 +731,108 @@ class Page {
    }
 
 
+   def doubleClick(By by) {
+      log.info "Double click [${by}]"
+
+      for (int i in 1..staleElementRetry) {
+         try {
+            log.info "double click retry count: [${i}]"
+
+            Actions actions = new Actions(driver)
+            actions.moveToElement(findElement(by)).doubleClick().build().perform()
+
+            break
+         } catch (StaleElementReferenceException e) {
+            // Do nothing. just make the loop to continue to iterate
+
+            log.error "Element [${by}] is stale. Retrying the double click..."
+         }
+      }
+   }
+
+   def rightClick(By by) {
+      log.info "Right click [${by}]"
+
+      for (int i in 1..staleElementRetry) {
+         try {
+            log.info "right click retry count: [${i}]"
+
+            Actions actions = new Actions(driver)
+            actions.moveToElement(findElement(by)).contextClick().build().perform()
+
+            break
+         } catch (StaleElementReferenceException e) {
+            // Do nothing. just make the loop to continue to iterate
+
+            log.error "Element [${by}] is stale. Retrying the right click..."
+         }
+      }
+   }
+
+   def mouseHover(By by) {
+      log.info "Hover over [${by}]"
+
+      for (int i in 1..staleElementRetry) {
+         try {
+            log.info "mouse hover retry count: [${i}]"
+
+            Actions actions = new Actions(driver)
+            actions.moveToElement(findElement(by)).perform()
+
+            break
+         } catch (StaleElementReferenceException e) {
+            // Do nothing. just make the loop to continue to iterate
+
+            log.error "Element [${by}] is stale. Retrying the mouse hover..."
+         }
+      }
+   }
+
+   def hover(String mouse) {
+      if (mouse != 'mouse') {
+         log.error("Error in mouse hover call")
+         throw new InvalidOptionException("correct usage: hover MOUSE over <By selector>")
+      }
+      [over: { locator ->
+         log.info "hovering over [${locator}]"
+
+         mouseHover(locator)
+      }]
+   }
+
+   def dragAndDrop(By source, By target) {
+      log.info "dragging $source and dropping over [$target]"
+
+      for (int i in 1..staleElementRetry) {
+         try {
+            log.info "drag-and-drop retry count: [${i}]"
+
+            throw new UnsupportedFeatureException('The drag and drop feature is not currently supported')
+
+            break
+         } catch (StaleElementReferenceException e) {
+            // Do nothing. just make the loop to continue to iterate
+
+            log.error "Element [${by}] is stale. Retrying the drag-and-drop..."
+         }
+      }
+   }
+
+   def drag(By source) {
+      [over: { target ->
+         dragAndDrop(source, target)
+      }]
+   }
+
    static {
       log.info('Initializing the time units at the load time')
       Number.metaClass {
-         getSeconds = {delegate}
-         getSecond = {delegate}
-         getMinute = {delegate * 60.seconds}
-         getMinutes = {delegate * 60.seconds}
-         getHour = {delegate * 60.seconds * 60.seconds}
-         getHours = {delegate * 60.seconds * 60.seconds}
+         getSeconds = { delegate }
+         getSecond = { delegate }
+         getMinute = { delegate * 60.seconds }
+         getMinutes = { delegate * 60.seconds }
+         getHour = { delegate * 60.seconds * 60.seconds }
+         getHours = { delegate * 60.seconds * 60.seconds }
       }
    }
 }

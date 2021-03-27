@@ -21,7 +21,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import java.time.Duration
 
 @Log4j2
-class Page {
+public class Page {
    ////////////////////// CONSTANTS ////////////////////////////
 //   final inside = 0
 //   final until = 1

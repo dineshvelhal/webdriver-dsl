@@ -4,6 +4,7 @@ package org.dineshv.pomdsl.unittests
 import org.dineshv.pomdsl.main.BaseTest
 import org.dinshv.pomdsl.pages.ConfirmationPage
 import org.dinshv.pomdsl.pages.LoginPage
+import org.dinshv.pomdsl.pages.OrderPage
 import org.testng.annotations.Test
 
 class ClickAndTypeTests extends BaseTest{
@@ -15,10 +16,8 @@ class ClickAndTypeTests extends BaseTest{
       open url
       loginPage = new LoginPage(driver)
 
-      ConfirmationPage confirmationPage = loginPage.login('admin', 'admin')
+      OrderPage orderPage = loginPage.login('admin', 'admin')
 
-      assert confirmationPage.confirmMessage.displayed == true
-      assert confirmationPage.confirmMessage.text == 'Confirmation'
-      assert confirmationPage.title == 'Confirmation!'
+      assert orderPage.title == 'Order Pizza'
    }
 }

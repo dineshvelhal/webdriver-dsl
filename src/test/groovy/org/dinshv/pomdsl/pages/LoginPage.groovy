@@ -21,6 +21,6 @@ class LoginPage extends Page {
     type password into passwordField
     click loginButton
 
-    return new ConfirmationPage(driver)
+    return new OrderPage(driver)
   }
 }

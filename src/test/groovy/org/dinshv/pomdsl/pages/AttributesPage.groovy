@@ -4,7 +4,6 @@ import groovy.util.logging.Log4j2
 import org.dineshv.pomdsl.Page
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
 
 @Log4j2
 class AttributesPage extends Page {
@@ -21,6 +20,6 @@ class AttributesPage extends Page {
    }
 
    def checkJavaCheckBox() {
-      check javaCheckBox
+      choose javaCheckBox
    }
 }

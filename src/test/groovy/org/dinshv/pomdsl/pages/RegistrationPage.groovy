@@ -27,7 +27,7 @@ class RegistrationPage extends Page {
     type password2 into password2Field
 
     if(acceptTerms) {
-      check termsConditionsCheckBox
+      choose termsConditionsCheckBox
     } else {
       uncheck termsConditionsCheckBox
     }

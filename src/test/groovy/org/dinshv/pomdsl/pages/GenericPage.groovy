@@ -107,16 +107,16 @@ class GenericPage extends Page {
       uncheck javaCheckBox
       assert javaCheckBox.selected == false
 
-      check javaCheckBox
+      choose javaCheckBox
       assert javaCheckBox.selected == true
 
-      check pythonCheckBox
+      choose pythonCheckBox
       assert pythonCheckBox.selected == true
 
-      check javaCheckBox
+      choose javaCheckBox
       assert javaCheckBox.selected == true
 
-      check javascriptCheckBox
+      choose javascriptCheckBox
       assert javascriptCheckBox.selected == true
 
       uncheck javaCheckBox
@@ -128,13 +128,13 @@ class GenericPage extends Page {
       uncheck javascriptCheckBox
       assert javascriptCheckBox.selected == false
 
-      check seleniumRadioButton
+      choose seleniumRadioButton
       assert seleniumRadioButton.selected == true
 
-      check protractorRadioButton
+      choose protractorRadioButton
       assert protractorRadioButton.selected == true
 
-      check protractorRadioButton
+      choose protractorRadioButton
       assert protractorRadioButton.selected == true
 
       uncheck protractorRadioButton

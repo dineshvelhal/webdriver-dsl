@@ -80,6 +80,11 @@ class Page {
       driver.navigate().refresh()
    }
 
+
+
+
+
+
    // fluent way to type something
    // example - type 'hello' into text field
    /**
@@ -103,7 +108,7 @@ class Page {
       }]
    }
 
-   def clearAndType( String input) {
+   def clearAndType(String input) {
       [into: { locator ->
          log.info "typing [${input}] into [${locator}]"
 
@@ -272,7 +277,7 @@ class Page {
 
    // TODO - select check boxes
    // TODO - select radio buttons
-   def check(By locator) {
+   def choose(By locator) {
       String type = locator.type
 
       log.info "Checking the $type [$locator]"

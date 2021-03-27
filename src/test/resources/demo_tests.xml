@@ -6,6 +6,8 @@
       <class name="org.dineshv.pomdsl.demotests.LoginTests"/>
       <class name="org.dineshv.pomdsl.demotests.RegistrationTests"/>
       <class name="org.dineshv.pomdsl.demotests.CookieTests"/>
+      <class name="org.dineshv.pomdsl.demotests.OrderOldTests"/>
+      <class name="org.dineshv.pomdsl.demotests.OrderTests"/>
     </classes>
   </test>
 </suite>

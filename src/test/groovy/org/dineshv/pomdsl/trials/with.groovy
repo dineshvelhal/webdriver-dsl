@@ -1,23 +1,50 @@
 package org.dineshv.pomdsl.trials
 
-class TestClass {
-   int a, b, c
+import io.github.bonigarcia.wdm.WebDriverManager
+import org.dineshv.pomdsl.Page
+import org.openqa.selenium.By
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.chrome.ChromeDriver
 
-   TestClass(a, b, c) {
-      this.a = a
-      this.b = b
-      this.c = c
+class GenericPage extends Page {
+   By javaCheckBox = byId("check_java", 'JAVA_CHECKBOX')
+   By pythonCheckBox = byId("check_python", 'PYTHON_CHECKBOX')
+   By javascriptCheckBox = byId("check_javascript", 'JAVASCRIPT_CHECKBOX')
+
+   By seleniumRadioButton = byId("rad_selenium", 'SELENIUM_RADIOBUTTON')
+   By protractorRadioButton = byId("rad_protractor", 'PROTRACTOR_RADIOBUTTON')
+
+   public GenericPage(WebDriver driver) {
+      super(driver)
+   }
+
+   def checkboxRadioButtonFlow() {
+      navigate 'https://dineshvelhal.github.io/testautomation-playground/forms.html'
+
+      choose 'JAVA_CHECKBOX'
+      choose 'PYTHON_CHECKBOX'
+      choose 'JAVASCRIPT_CHECKBOX'
+
+      choose 'SELENIUM_RADIOBUTTON'
+
    }
 }
 
-TestClass tc = new TestClass(1, 2, 3)
+WebDriverManager.chromedriver().setup()
 
-int x, y, z
+driver = new ChromeDriver()
+driver.manage().window().maximize()
 
-tc.with {
-   x = a
-   y = b
-   z = c
+try {
+   GenericPage genericPage = new GenericPage(driver)
+
+   genericPage.checkboxRadioButtonFlow()
+} finally {
+   sleep 5000
+
+   driver.quit()
 }
 
-println("x = $x, y = $y, z = $z")
+
+

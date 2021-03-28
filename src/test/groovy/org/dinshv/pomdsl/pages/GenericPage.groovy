@@ -8,6 +8,12 @@ import org.openqa.selenium.WebElement
 
 @Log4j2
 class GenericPage extends Page {
+   By javaCheckBox = byId("check_java", 'JAVA_CHECKBOX')
+   By pythonCheckBox = byId("check_python", 'PYTHON_CHECKBOX')
+   By javascriptCheckBox = byId("check_javascript", 'JAVASCRIPT_CHECKBOX')
+
+   By seleniumRadioButton = byId("rad_selenium", 'SELENIUM_RADIOBUTTON')
+   By protractorRadioButton = byId("rad_protractor", 'PROTRACTOR_RADIOBUTTON')
 
    public GenericPage(WebDriver driver) {
       super(driver)
@@ -98,13 +104,6 @@ class GenericPage extends Page {
    }
 
    def checkboxRadioButtonFlow() {
-      By javaCheckBox = byId("check_java")
-      By pythonCheckBox = byId("check_python")
-      By javascriptCheckBox = byId("check_javascript")
-
-      By seleniumRadioButton = byId("rad_selenium")
-      By protractorRadioButton = byId("rad_protractor")
-
       navigate 'https://dineshvelhal.github.io/testautomation-playground/forms.html'
 
       uncheck javaCheckBox
@@ -142,6 +141,24 @@ class GenericPage extends Page {
 
       uncheck protractorRadioButton
       assert protractorRadioButton.selected == true
+   }
+
+   def findLocatorByUniqueNameFlow() {
+
+
+      navigate 'https://dineshvelhal.github.io/testautomation-playground/forms.html'
+
+      choose 'JAVA_CHECKBOX'
+      assert javaCheckBox.selected == true
+
+      choose 'PYTHON_CHECKBOX'
+      assert pythonCheckBox.selected == true
+
+      choose 'JAVASCRIPT_CHECKBOX'
+      assert javascriptCheckBox.selected == true
+
+      choose 'SELENIUM_RADIOBUTTON'
+      assert seleniumRadioButton.selected == true
    }
 
 }

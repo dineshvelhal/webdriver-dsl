@@ -290,6 +290,13 @@ public class Page {
       }
    }
 
+   def choose(String locator) {
+      log.info("Calling choose with locator unique name")
+      By by = findLocatorByUniqueName(locator)
+
+      choose by
+   }
+
    // TODO - Uncheck checkbox
    def uncheck(By locator) {
       String type = locator.type
@@ -524,80 +531,83 @@ public class Page {
 
 
    /////////// Locator wrapper methods //////////////////////////////
-   By byClassName(String className) {
+   By byClassName(String className, String uniqueName=null) {
       log.info("returning locator for className=[$className]")
 
       By by = By.className(className)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byCssSelector(String cssSelector) {
+   By byCssSelector(String cssSelector, String uniqueName=null) {
       log.info("returning locator for cssSelector=[$cssSelector]")
 
       By by = By.cssSelector(cssSelector)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byId(String id) {
+   By byId(String id, String uniqueName=null) {
       log.info("returning locator for Id=[$id]")
 
       By by = By.id(id)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byLinkText(String linkText) {
+   By byLinkText(String linkText, String uniqueName=null) {
       log.info("returning locator for linkText=[$linkText]")
 
       By by = By.linkText(linkText)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byName(String name) {
+   By byName(String name, String uniqueName=null) {
       log.info("returning locator for name=[$name]")
 
       By by = By.name(name)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byPartialLinkText(String partialLinkText) {
+   By byPartialLinkText(String partialLinkText, String uniqueName=null) {
       log.info("returning locator for partialLinkText=[$partialLinkText]")
 
       By by = By.partialLinkText(partialLinkText)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byTagName(String tagName) {
+   By byTagName(String tagName, String uniqueName=null) {
       log.info("returning locator for tagName=[$tagName]")
 
       By by = By.tagName(tagName)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   By byXpath(String xpath) {
+   By byXpath(String xpath, String uniqueName=null) {
       log.info("returning locator for xpath=[$xpath]")
 
       By by = By.xpath(xpath)
-      addPropertiesToLocators(by)
+      addPropertiesToLocators(by, uniqueName)
       addMethodsToLocators(by)
       return by
    }
 
-   private addPropertiesToLocators(By by) {
+   private addPropertiesToLocators(By by, String uniqueName) {
       log.info("Adding new properties to the locator [$by]")
+
+      // adds a unique name to the locator
+      by.metaClass.UNAME = uniqueName
 
       by.metaClass.propertyMissing = { String property ->
 
@@ -655,7 +665,8 @@ public class Page {
       }
    }
 
-   private addMethodsToLocators(By by) {
+   private
+   addMethodsToLocators(By by) {
       log.info("Adding new properties to the locator [$by]")
 
       by.metaClass.methodMissing = { String name, args ->
@@ -866,6 +877,24 @@ public class Page {
       [over: { target ->
          dragAndDrop(source, target)
       }]
+   }
+
+
+   def findLocatorByUniqueName(locator) {
+      log.info("Finding the locator using its UNIQUE NAME = $locator")
+
+      for(MetaProperty property in this.metaClass.properties) {
+         // log.info("Property found - ${property.name} / ${property.type.name}")
+
+         if(property.type.name == 'org.openqa.selenium.By') {
+            log.info("Locator found - ${property.name} / ${property.type.name} UNAME = ${this[property.name].UNAME}")
+
+            if(this[property.name].UNAME == locator) {
+               log.info("Property ${property.name} found with unique name = $locator")
+               return this[property.name]
+            }
+         }
+      }
    }
 
    static {

@@ -18,4 +18,12 @@ class RadiobuttonCheckBoxTests extends BaseTest{
       genericPage.checkboxRadioButtonFlow()
    }
 
+   @Test(enabled = true)
+   void find_locator_by_unique_name_test() {
+      open url
+      genericPage = new GenericPage(driver)
+
+      genericPage.findLocatorByUniqueNameFlow()
+   }
+
 }

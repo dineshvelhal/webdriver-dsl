@@ -357,13 +357,15 @@ public class Page {
     * @return
     */
    def waitForState(By by, String state) {
-      log.info("Sleep for 500 ms")
-      sleep 500 // Added so that page gets time to proceed and below conditions work as expected
+//      log.info("Sleep for 500 ms")
+//      sleep 500 // Added so that page gets time to proceed and below conditions work as expected
       switch (state) {
          case VISIBLE:
-            defaultWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by))
+            defaultWait.until(ExpectedConditions.invisibilityOfElementLocated(by))
+            defaultWait.until(ExpectedConditions.visibilityOfElementLocated(by))
             break
          case INVISIBLE:
+            defaultWait.until(ExpectedConditions.visibilityOfElementLocated(by))
             defaultWait.until(ExpectedConditions.invisibilityOfElementLocated(by))
             break
          case CLICKABLE:
@@ -374,7 +376,7 @@ public class Page {
             break
             /*case stale:
               defaultWait.until(ExpectedConditions.stalenessOf(findElement(by)))*/
-            break
+            //break
          default:
             throw new InvalidStateException("Invalid state [${state}]for the element: [${by}]")
       }
@@ -637,49 +639,49 @@ public class Page {
 
          log.info "Missing property [${property}] of [$by]"
 
-         log.info("Sleep for 500 ms")
-         sleep 500
+//         log.info("Sleep for 500 ms")
+//         sleep 500
 
          switch (property) {
             case '$':
                log.info "Missing property [${property}] of [$by] returns [WebElement=${webElem}]"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem
             case 'text':
                log.info "Missing property [${property}] of [$by] returns WebElement.getText()"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.getText()
             case 'tag':
                log.info "Missing property [${property}] of [$by] returns WebElement.getTagName()"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.getTagName()
             case 'location':
                log.info "Missing property [${property}] of [$by] returns WebElement.getLocation()"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.getLocation()
             case 'size':
                log.info "Missing property [${property}] of [$by] returns WebElement.getSize()"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.getSize()
             case 'rectangle':
                log.info "Missing property [${property}] of [$by] returns WebElement.getRect()"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.getRect()
             case 'selected':
                log.info "Missing property [${property}] of [$by] returns WebElement.selected"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.selected
             case 'enabled':
                log.info "Missing property [${property}] of [$by] returns WebElement.enabled"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.enabled
             case 'displayed':
                log.info "Missing property [${property}] of [$by] returns WebElement.displayed"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                return webElem.displayed
             default: // treat every other missing property as attribute
                log.info "Missing property [${property}] of [$by] returns WebElement.getAttribute(\"${property}\")"
-               webElem = driver.findElement(by)
+               webElem = findElement(by)
                def attr = webElem.getAttribute(property)
 
                if (attr == null) {

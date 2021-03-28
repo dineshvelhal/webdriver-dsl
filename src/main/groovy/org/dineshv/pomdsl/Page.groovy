@@ -357,6 +357,7 @@ public class Page {
     * @return
     */
    def waitForState(By by, String state) {
+      log.info("Sleep for 500 ms")
       sleep 500 // Added so that page gets time to proceed and below conditions work as expected
       switch (state) {
          case VISIBLE:

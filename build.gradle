@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'org.dineshv'
-version '0.72'
+version '0.73'
 
 repositories {
    mavenCentral()

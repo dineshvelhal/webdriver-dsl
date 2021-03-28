@@ -342,7 +342,7 @@ public class Page {
     * @return
     */
    def waitFor(By by) {
-      [toBe: { state ->
+      [toBe: { String state ->
 
          log.info "Waiting for the state [${state}] of [${by}]"
 
@@ -635,47 +635,50 @@ public class Page {
 
          WebElement webElem
 
-         log.info "Missing property [${property}]"
+         log.info "Missing property [${property}] of [$by]"
+
+         log.info("Sleep for 500 ms")
+         sleep 500
 
          switch (property) {
             case '$':
-               log.info "Missing property [${property}] returns [WebElement=${webElem}]"
+               log.info "Missing property [${property}] of [$by] returns [WebElement=${webElem}]"
                webElem = driver.findElement(by)
                return webElem
             case 'text':
-               log.info "Missing property [${property}] returns WebElement.getText()"
+               log.info "Missing property [${property}] of [$by] returns WebElement.getText()"
                webElem = driver.findElement(by)
                return webElem.getText()
             case 'tag':
-               log.info "Missing property [${property}] returns WebElement.getTagName()"
+               log.info "Missing property [${property}] of [$by] returns WebElement.getTagName()"
                webElem = driver.findElement(by)
                return webElem.getTagName()
             case 'location':
-               log.info "Missing property [${property}] returns WebElement.getLocation()"
+               log.info "Missing property [${property}] of [$by] returns WebElement.getLocation()"
                webElem = driver.findElement(by)
                return webElem.getLocation()
             case 'size':
-               log.info "Missing property [${property}] returns WebElement.getSize()"
+               log.info "Missing property [${property}] of [$by] returns WebElement.getSize()"
                webElem = driver.findElement(by)
                return webElem.getSize()
             case 'rectangle':
-               log.info "Missing property [${property}] returns WebElement.getRect()"
+               log.info "Missing property [${property}] of [$by] returns WebElement.getRect()"
                webElem = driver.findElement(by)
                return webElem.getRect()
             case 'selected':
-               log.info "Missing property [${property}] returns WebElement.selected"
+               log.info "Missing property [${property}] of [$by] returns WebElement.selected"
                webElem = driver.findElement(by)
                return webElem.selected
             case 'enabled':
-               log.info "Missing property [${property}] returns WebElement.enabled"
+               log.info "Missing property [${property}] of [$by] returns WebElement.enabled"
                webElem = driver.findElement(by)
                return webElem.enabled
             case 'displayed':
-               log.info "Missing property [${property}] returns WebElement.visible"
+               log.info "Missing property [${property}] of [$by] returns WebElement.displayed"
                webElem = driver.findElement(by)
                return webElem.displayed
             default: // treat every other missing property as attribute
-               log.info "Missing property [${property}] returns WebElement.getAttribute(\"${property}\")"
+               log.info "Missing property [${property}] of [$by] returns WebElement.getAttribute(\"${property}\")"
                webElem = driver.findElement(by)
                def attr = webElem.getAttribute(property)
 

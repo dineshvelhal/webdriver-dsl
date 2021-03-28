@@ -127,4 +127,15 @@ class KeyboardActionsPage extends Page {
       clearAndType lastName into textArea
       assert textArea.value == lastName
    }
+
+   def numericDataEntryFlow() {
+      refreshPage()
+
+      clearAndType 5 into textArea
+      assert textArea.value == '5'
+
+      refreshPage()
+      type 10 into textArea
+      assert textArea.value == '10'
+   }
 }

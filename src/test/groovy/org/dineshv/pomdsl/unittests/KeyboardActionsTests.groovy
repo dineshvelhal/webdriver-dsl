@@ -55,4 +55,13 @@ class KeyboardActionsTests extends BaseTest{
 
     keyboardActionsPage.clearAndTypeFlow()
   }
+
+  @Test(enabled = true)
+  void numeric_data_entry_test() {
+    open url
+
+    keyboardActionsPage = new KeyboardActionsPage(driver)
+
+    keyboardActionsPage.numericDataEntryFlow()
+  }
 }

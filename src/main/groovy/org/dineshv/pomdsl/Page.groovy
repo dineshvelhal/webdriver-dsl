@@ -102,9 +102,19 @@ public class Page {
 
    def type(Keys input) {
       [into: { locator ->
-         log.info "typing [${input}] into [${locator}]"
+         log.info "typing text [${input}] into [${locator}]"
 
          writeText(locator, input.toString())
+      }]
+   }
+
+   def type(int input) {
+      String inputStr = input.toString()
+
+      [into: { By locator ->
+         log.info "typing integer [${input}] into [${locator}]"
+
+         writeText(locator, inputStr)
       }]
    }
 
@@ -113,6 +123,16 @@ public class Page {
          log.info "typing [${input}] into [${locator}]"
 
          clearAndWriteText(locator, input)
+      }]
+   }
+
+   def clearAndType(int input) {
+      String inputStr = input.toString()
+
+      [into: { By locator ->
+         log.info "typing integer [${input}] into [${locator}]"
+
+         clearAndWriteText(locator, inputStr)
       }]
    }
 
